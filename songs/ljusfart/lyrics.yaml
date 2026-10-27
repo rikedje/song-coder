@@ -1,0 +1,15 @@
+# MC-utrop. Rent tal med delay-kast, som en MC över ett rave-ljudsystem.
+voice: en_US-ryan-high
+style: plain
+length_scale: 0.95
+
+lines:
+  - {section: intro, bar: 4, text: "Incoming signal."}
+  - {section: intro, bar: 10, text: "Satellite one. Do you read me?"}
+  - {section: build, bar: 13, text: "Locked on."}
+  - {section: drop1, bar: 0, text: "Lightspeed!"}
+  - {section: drop1, bar: 16, text: "Here we go!"}
+  - {section: breakdown, bar: 3, text: "A signal from the stars."}
+  - {section: breakdown, bar: 10, text: "Hold tight."}
+  - {section: drop2, bar: 0, text: "Lightspeed!"}
+  - {section: drop2, bar: 24, text: "Satellite one. Signal locked."}

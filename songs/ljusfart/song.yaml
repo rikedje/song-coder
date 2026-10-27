@@ -1,0 +1,167 @@
+# Ljusfart – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, MC-utropen i lyrics.yaml.
+title: Ljusfart
+bpm: 172          # drum & bass-tempo; vid ~150 försvinner den rullande känslan
+key: F# minor
+seed: 172
+date: 2026-10-27
+genre: Drum & Bass
+cover: {style: hyperspace}
+tail_seconds: 4
+fade_out_bars: 8
+
+# Liquid-ackord, två takter vardera: i – VI – iv – V(sus)
+progression: [F#m9, F#m9, Dmaj9, Dmaj9, Bm9, Bm9, C#7sus, C#7sus]
+chords:
+  F#m9:   {root: F#1, notes: [A3, C#4, E4, G#4]}
+  Dmaj9:  {root: D2,  notes: [A3, C#4, E4, F#4]}
+  Bm9:    {root: B1,  notes: [A3, C#4, D4, F#4]}
+  C#7sus: {root: C#2, notes: [F#3, G#3, B3, C#4]}
+
+instruments:
+  kick:    {type: kick, pitch_hi: 170, pitch_lo: 55, decay: 0.12, drive: 1.2}
+  snare:   {type: snare, decay: 0.14, drive: 1.4}
+  hat:     {type: hat, decay: 0.025}
+  ride:    {type: ohat, decay: 0.08}
+  sub:     {type: mono, osc: sine, attack: 0.004, decay: 0.3, sustain: 0.9, release: 0.06, legato: 0.95}
+  midbass: {type: softbass, cutoff: 350, env_amount: 1.0, sub: 0.0, legato: 0.9}
+  keys:    {type: epiano, cutoff: 3500, decay: 1.4, index: 1.4, legato: 1.0}
+  pad:     {type: superpad, cutoff: 2000, voices: 7, spread: 18, attack: 0.9, release: 1.5, legato: 1.0}
+  bells:   {type: bell, cutoff: 5000, attack: 0.005, decay: 0.7, ring: 1.5, index: 1.5, legato: 0.5}
+  blips:   {type: mono, osc: sine, decay: 0.05, sustain: 0.0, release: 0.02, legato: 0.4}
+  lead:    {type: superlead, cutoff: 2400, voices: 5, spread: 8, drive: 0.3, release: 0.4, resonance: 0.9}
+
+# Takter: intro 16 · build 16 · drop1 32 · breakdown 16 · drop2 32 · outro 16 = 128 (≈3:02)
+sections:
+  - name: intro
+    bars: 16
+    tracks:
+      pad: {pattern: pad_2bar, cutoff: [0.3, 0.7]}
+      keys: {pattern: keys_liquid, cutoff: [0.3, 0.6], gain: -3}
+      blips: satellite
+    tail:
+      bars: 8
+      tracks:
+        hat: {pattern: hat_8, gain: -6}
+    fx:
+      - {type: riser, at: 12, bars: 4, gain: -6}
+
+  - name: build
+    bars: 16
+    tracks:
+      kick: kick_2step
+      snare: snare_2step
+      hat: hat_16
+      sub: {pattern: sub_hold, gain: -4}
+      keys: {pattern: keys_liquid, cutoff: [0.6, 1.0]}
+      pad: pad_2bar
+      bells: {pattern: bells_arp, cutoff: [0.4, 1.0], gain: -3}
+    tail:
+      bars: 4
+      tracks:
+        snare: snare_roll4
+        kick: null
+    fx:
+      - {type: crash, at: 0, gain: -4}
+      - {type: riser, at: 8, bars: 8}
+
+  - name: drop1
+    bars: 32
+    tracks:
+      kick: [kick_2step, kick_2step, kick_2step, kick_2step_b]
+      snare: [snare_ghost, snare_ghost, snare_ghost, snare_fill]
+      hat: hat_16
+      ride: ride_off
+      sub: sub_roll
+      midbass: sub_roll
+      keys: keys_liquid
+      pad: pad_2bar
+      bells: bells_arp
+      blips: {pattern: satellite, gain: -4}
+    fx:
+      - {type: impact, at: 0, gain: -4}
+      - {type: crash, at: 0}
+      - {type: crash, at: 8, gain: -5}
+      - {type: crash, at: 16, gain: -3}
+      - {type: crash, at: 24, gain: -5}
+
+  - name: breakdown
+    bars: 16
+    tracks:
+      pad: {pattern: pad_2bar, cutoff: [1.0, 1.4]}
+      keys: keys_liquid
+      sub: {pattern: sub_hold, gain: -6}
+      blips: satellite
+      bells: {pattern: bells_arp, cutoff: [0.6, 0.4], gain: -4}
+    tail:
+      bars: 4
+      tracks:
+        snare: snare_roll4
+        hat: hat_16
+    fx:
+      - {type: impact, at: 0, gain: -6}
+      - {type: riser, at: 8, bars: 8}
+
+  - name: drop2
+    bars: 32
+    tracks:
+      kick: [kick_2step, kick_2step, kick_2step, kick_2step_b]
+      snare: [snare_ghost, snare_ghost, snare_ghost, snare_fill]
+      hat: hat_16
+      ride: ride_off
+      sub: sub_roll
+      midbass: sub_roll
+      keys: keys_liquid
+      pad: pad_2bar
+      bells: {pattern: bells_arp, gain: -3}
+      lead: melody
+      blips: {pattern: satellite, gain: -6}
+    fx:
+      - {type: impact, at: 0}
+      - {type: crash, at: 0}
+      - {type: crash, at: 8, gain: -5}
+      - {type: crash, at: 16, gain: -3}
+      - {type: crash, at: 24, gain: -5}
+
+  - name: outro
+    bars: 16
+    tracks:
+      kick: kick_2step
+      snare: snare_2step
+      hat: hat_16
+      sub: sub_roll
+      pad: {pattern: pad_2bar, cutoff: [1.0, 0.3]}
+      blips: satellite
+    tail:
+      bars: 8
+      tracks:
+        kick: null
+        snare: null
+        sub: {pattern: sub_hold, gain: -4}
+    fx:
+      - {type: crash, at: 0, gain: -4}
+
+# Rent och djupt: sinus-sub + mjuk mellanbas, sidechain från kicken
+mix:
+  kick:    {gain: 0}
+  snare:   {gain: -6, reverb: 0.2}
+  hat:     {gain: -12, pan: 0.2, reverb: 0.05}
+  ride:    {gain: -17, pan: -0.2, reverb: 0.1}
+  sub:     {gain: -6, duck: 0.5}
+  midbass: {gain: -8, duck: 0.5, highpass: 90}
+  keys:    {gain: -15, duck: 0.3, reverb: 0.3, delay: 0.1, highpass: 150}
+  pad:     {gain: -15, duck: 0.6, reverb: 0.5, highpass: 180}
+  bells:   {gain: -15, duck: 0.3, delay: 0.4, reverb: 0.4, pan: 0.15}
+  blips:   {gain: -10, delay: 0.5, reverb: 0.2, pan: -0.25}
+  lead:    {gain: -7, duck: 0.2, delay: 0.3, reverb: 0.35, highpass: 200}
+  voice:   {gain: -3, delay: 0.35, reverb: 0.2, highpass: 120}
+  fx:      {gain: -11, reverb: 0.4}
+
+fx_buses:
+  delay: {steps: 3, feedback: 0.45, damp: 0.3, return: -5, reverb: 0.3}
+  reverb: {seconds: 2.8, damping: 5000, return: -5}
+
+master:
+  glue_threshold: -14
+  target_rms_db: -10.0
+  ceiling_db: -1.0

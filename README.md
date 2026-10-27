@@ -62,6 +62,7 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 | [När jag ska somna vaknar jag](songs/nar-jag-ska-somna-vaknar-jag/) | ambient/drone, avlägsna viskningar | 80 BPM, D-dur |
 | [Hemmaautomat](songs/hemmaautomat/) | Kraftwerk-inspirerad electro, vocoderprat om ett smart hem | 115 BPM, C-moll |
 | [Regnig söndag](songs/regnig-sondag/) | lo-fi hiphop i halvtid, regn, vinyl och filmrepliker | 128 BPM, F-dur |
+| [Ljusfart](songs/ljusfart/) | liquid drum & bass, MC-utrop om en satellitsignal | 172 BPM, F#-moll |
 
 ## Ansvarsfriskrivning (läs det här)
 

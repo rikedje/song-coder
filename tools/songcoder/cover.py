@@ -243,7 +243,34 @@ def rainwindow(cfg, rng):
     return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
 
-STYLES = {"rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
+def hyperspace(cfg, rng):
+    """Stars stretched into streaks rushing out from a bright vanishing point."""
+    p = {"space": ["#02030a", "#0a0f2a"], "streak": ["#9fd8ff", "#ffffff", "#c9a6ff"], "core": "#bfe6ff",
+         **cfg.get("palette", {})}
+    yy, xx = np.mgrid[0:SIZE, 0:SIZE]
+    cx, cy = SIZE * 0.5, SIZE * 0.58
+    r = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / SIZE
+    base = _hex(p["space"][1]) * np.exp(-r * 3)[..., None] + _hex(p["space"][0])
+    img = Image.fromarray(np.clip(base, 0, 255).astype(np.uint8))
+    layer = Image.new("RGB", (SIZE, SIZE))
+    d = ImageDraw.Draw(layer)
+    for _ in range(520):
+        a = rng.uniform(0, 2 * np.pi)
+        r0 = rng.uniform(40, 700) ** 1.0
+        length = r0 * rng.uniform(0.2, 0.9)
+        c = _hex(p["streak"][int(rng.integers(0, len(p["streak"])))]) * rng.uniform(0.3, 1.0)
+        x0, y0 = cx + r0 * np.cos(a), cy + r0 * np.sin(a)
+        x1, y1 = cx + (r0 + length) * np.cos(a), cy + (r0 + length) * np.sin(a)
+        d.line([(x0, y0), (x1, y1)], fill=tuple(int(v) for v in c), width=max(1, int(r0 / 160)))
+    core = Image.new("RGB", (SIZE, SIZE))
+    ImageDraw.Draw(core).ellipse([cx - 40, cy - 40, cx + 40, cy + 40], fill=tuple(int(v) for v in _hex(p["core"])))
+    a = (np.asarray(img, dtype=float) + np.asarray(layer.filter(ImageFilter.GaussianBlur(1.2)), dtype=float)
+         + np.asarray(layer.filter(ImageFilter.GaussianBlur(8)), dtype=float) * 0.8
+         + np.asarray(core.filter(ImageFilter.GaussianBlur(60)), dtype=float) * 2.0)
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+
+
+STYLES = {"hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
           "circuit": circuit}
 
 
