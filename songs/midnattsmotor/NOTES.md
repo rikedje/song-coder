@@ -8,7 +8,13 @@ Mörk synthwave/darksynth om en nattlig biljakt genom en neonstad. Låtprompten 
 ./render.sh songs/midnattsmotor
 ```
 
-Kommandot körs från repots rot. Det installerar verktygen vid behov (uv-hanterad Python 3.12 och Pipers röstmodell) och skriver `out/song.wav` (24 bit, 44,1 kHz) och `out/song.mp3` (320 kbps). Det tar ca 20 s.
+Kommandot körs från repots rot. Det installerar verktygen vid behov (uv-hanterad Python 3.12 och Pipers röstmodell) och skriver:
+
+- `out/song.wav` (24 bit, 44,1 kHz)
+- `out/song.mp3` (320 kbps, med ID3-taggar, låttext och inbäddat omslag)
+- `out/cover.jpg`, med stilen `sunset`: en randig synthwave-sol över ett neonrutnät
+
+Det tar ca 20 s.
 
 ## Filer
 

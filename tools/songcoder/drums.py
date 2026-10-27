@@ -29,7 +29,7 @@ def snare(p, rng):
         clap[s:] += np.exp(-tt / (0.006 if k < 2 else 0.09))
     clap = bandpass(rng.standard_normal(n), 1400, 1.2) * clap
     x = 0.7 * tone + 1.0 * noise + 0.9 * clap
-    x = soft_clip(x, 1.8)
+    x = soft_clip(x, p.get("drive", 1.8))
     return np.stack([x, x])
 
 

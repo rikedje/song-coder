@@ -4,14 +4,17 @@ import wave
 from pathlib import Path
 
 import lameenc
+import mutagen.mp3
 import numpy as np
 import yaml
 
 from . import dsp
+from .cover import make_cover
 from .drums import DRUMS, FX
 from .dsp import SR, db
 from .instruments import INSTRUMENTS
-from .voice import robotize, tts
+from .tags import write_tags
+from .voice import robotize, tts, whisper
 
 VEL = {"x": 1.0, "o": 0.6, "g": 0.35}
 NOTE_RE = re.compile(r"^([A-G])(#|b)?(-?\d)$")
@@ -55,7 +58,10 @@ def resolve_token(tok, chord):
     if base == "r":
         f = note_freq(chord["root"])
     elif base.isdigit():
-        f = note_freq(chord["notes"][int(base) - 1])
+        # indices past the chord size wrap around an octave up
+        k = int(base) - 1
+        octave += k // len(chord["notes"])
+        f = note_freq(chord["notes"][k % len(chord["notes"])])
     else:
         f = note_freq(base)
     return [f * 2 ** octave], vel
@@ -194,7 +200,10 @@ class Song:
         for line in cfg["lines"]:
             x = tts(line["text"], cfg["voice"], self.dir / "build" / "voice",
                     cfg.get("length_scale", 1.0))
-            y = robotize(x, carrier, self.rng, cfg.get("vocoder_mix", 0.7))
+            if cfg.get("style", "robot") == "whisper":
+                y = whisper(x, self.rng, cfg.get("air", 0.12))
+            else:
+                y = robotize(x, carrier, self.rng, cfg.get("vocoder_mix", 0.7))
             bar = sec_by_name[line["section"]] + line.get("bar", 0)
             self.place("voice", y * db(line.get("gain", 0.0)), bar * self.bar * SR)
 
@@ -247,7 +256,9 @@ class Song:
         rms = np.sqrt(np.mean(x[:, : nb * blk].reshape(2, nb, blk) ** 2, axis=(0, 2)))
         loud = np.sort(rms)[int(nb * 0.7):].mean()
         x = x * (db(mcfg.get("target_rms_db", -10.0)) / loud)
-        x = dsp.soft_clip(x * 0.9, 1.2) / 0.9
+        sat = mcfg.get("saturation", 1.2)
+        if sat:
+            x = dsp.soft_clip(x * 0.9, sat) / 0.9
         x = dsp.limiter(x, mcfg.get("ceiling_db", -1.0))
         fade = self.song.get("fade_out_bars", 0)
         if fade:
@@ -278,6 +289,19 @@ def write_mp3(path, x):
     Path(path).write_bytes(data)
 
 
+def retag(song_dir):
+    """Regenerate cover.jpg and ID3 tags on an existing mp3 without re-rendering audio."""
+    song, _, lyrics = load(song_dir)
+    od = Path(song_dir) / "out"
+    mp3 = od / "song.mp3"
+    if not mp3.exists():
+        raise SystemExit(f"Saknas: {mp3} – rendera låten först")
+    cover = make_cover(song, np.random.default_rng(song.get("seed", 1)), od / "cover.jpg")
+    seconds = mutagen.mp3.MP3(mp3).info.length
+    write_tags(mp3, song, lyrics, cover, seconds)
+    print(f"Taggat: {mp3}, {cover}")
+
+
 def render(song_dir):
     s = Song(song_dir)
     print(f"{s.song['title']}: {s.total_bars} takter, {s.n / SR:.1f} s")
@@ -293,4 +317,7 @@ def render(song_dir):
     od.mkdir(exist_ok=True)
     write_wav24(od / "song.wav", out)
     write_mp3(od / "song.mp3", out)
-    print(f"Klart: {od / 'song.wav'}, {od / 'song.mp3'}")
+    # cover.jpg next to the mp3 is picked up by players that read folder art
+    cover = make_cover(s.song, np.random.default_rng(s.song.get("seed", 1)), od / "cover.jpg")
+    write_tags(od / "song.mp3", s.song, s.lyrics, cover, out.shape[1] / SR)
+    print(f"Klart: {od / 'song.wav'}, {od / 'song.mp3'}, {cover}")

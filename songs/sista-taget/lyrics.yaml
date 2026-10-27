@@ -1,0 +1,22 @@
+# Viskad svensk text. section + bar = var repliken börjar (takt räknad från sektionens start).
+voice: sv_SE-nst-medium
+style: whisper
+length_scale: 1.25
+air: 0.15
+
+lines:
+  - section: B
+    bar: 2
+    text: "Ett efter ett slocknar fönstren."
+  - section: B
+    bar: 9
+    text: "Gatlyktorna blinkar. Och sedan ingenting."
+  - section: B
+    bar: 17
+    text: "Det sista tåget glider bort i mörkret."
+  - section: A2
+    bar: 12
+    text: "Bara du och jag är vakna nu."
+  - section: coda
+    bar: 1
+    text: "Godnatt, staden."

@@ -10,6 +10,8 @@ dependencies = [
     "pyyaml>=6",
     "piper-tts>=1.2",
     "lameenc>=1.7",
+    "mutagen>=1.47",
+    "pillow>=10.1",
 ]
 
 [tool.uv]

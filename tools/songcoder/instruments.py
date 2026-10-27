@@ -84,9 +84,40 @@ def superlead(freq, n_gate, vel, p, cm, rng):
     return x * env * vel
 
 
+def softbass(freq, n_gate, vel, p, cm, rng):
+    """Clean, warm analog-style bass: filtered saw over a sine sub, no drive."""
+    env = adsr(n_gate, 0.006, p.get("decay", 0.35), p.get("sustain", 0.7), 0.09)
+    n = env.shape[0]
+    t = np.arange(n) / SR
+    f = np.full(n, freq)
+    x = osc_saw(f, rng.random()) + 0.5 * osc_saw(f * _cents(5), rng.random())
+    cutoff = p.get("cutoff", 420) * cm * (1 + p.get("env_amount", 1.5) * np.exp(-t / 0.08))
+    x = svf(x, cutoff, p.get("resonance", 0.8), 0) * 0.6
+    x += p.get("sub", 0.8) * osc_sine(f, 0.0)
+    y = x * env * vel
+    return np.stack([y, y])
+
+
+def epiano(freq, n_gate, vel, p, cm, rng):
+    """Two-operator FM electric piano with tine attack and stereo tremolo."""
+    env = adsr(n_gate, 0.003, p.get("decay", 1.4), p.get("sustain", 0.12), p.get("release", 0.45))
+    n = env.shape[0]
+    t = np.arange(n) / SR
+    index = p.get("index", 1.6) * vel * np.exp(-t / 0.3) + 0.25
+    mod = np.sin(2 * np.pi * freq * t)
+    tine = 0.35 * vel * np.exp(-t / 0.02) * np.sin(2 * np.pi * freq * 14 * t)
+    x = np.sin(2 * np.pi * freq * t + index * mod + tine)
+    x = svf(x, np.full(n, p.get("cutoff", 5000) * cm), 0.707, 0)
+    trem = p.get("tremolo", 0.25) * np.sin(2 * np.pi * p.get("tremolo_hz", 4.2) * t)
+    y = x * env * vel
+    return np.stack([y * (1 + trem), y * (1 - trem)])
+
+
 INSTRUMENTS = {
     "distbass": distbass,
+    "softbass": softbass,
     "pluck": pluck,
+    "epiano": epiano,
     "superpad": superpad,
     "superlead": superlead,
 }

@@ -4,6 +4,9 @@ title: Midnattsmotor
 bpm: 125
 key: F minor
 seed: 1984
+date: 2026-10-27
+genre: Synthwave
+cover: {style: sunset}
 tail_seconds: 4
 fade_out_bars: 6
 

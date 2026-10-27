@@ -50,6 +50,25 @@ def vocoder(mod, carrier_freqs, rng, bands=22, lo=140.0, hi=7800.0):
     return out * _rms(mod) / _rms(out)
 
 
+def whisper(x, rng, air=0.12):
+    """Unvoiced whisper: vocode the speech onto pure noise, plus a little airy top end."""
+    n = x.shape[0]
+    noise = rng.standard_normal(n)
+    edges = np.geomspace(200.0, 10000.0, 29)
+    env_sos = signal.butter(2, 60, fs=SR, output="sos")
+    y = np.zeros(n)
+    for a, b in zip(edges[:-1], edges[1:]):
+        sos = signal.butter(2, [a, b], btype="band", fs=SR, output="sos")
+        env = signal.sosfilt(env_sos, np.abs(signal.sosfilt(sos, x)))
+        y += signal.sosfilt(sos, noise) * np.maximum(env, 0)
+    y = y * _rms(x) / _rms(y)
+    top = sos_filter(x, "highpass", 3000)
+    y = y + air * top * _rms(y) / _rms(top)
+    d = int(0.009 * SR)
+    right = np.concatenate([np.zeros(d), y[:-d]])
+    return np.stack([0.8 * y + 0.2 * right, 0.8 * right + 0.2 * y])
+
+
 def robotize(x, carrier_freqs, rng, vocoder_mix=0.7, ring_hz=55.0):
     t = np.arange(x.shape[0]) / SR
     voc = vocoder(x, carrier_freqs, rng)
