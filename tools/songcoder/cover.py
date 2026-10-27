@@ -211,7 +211,39 @@ def circuit(cfg, rng):
     return _glow(img, layer, 18, 0.9)
 
 
-STYLES = {"sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
+def rainwindow(cfg, rng):
+    """Looking out through a wet window at blurred warm lights."""
+    p = {"sky": ["#1b2a33", "#24394a", "#3a4a52"], "bokeh": ["#ffb35c", "#ffd9a0", "#6fc3c9"],
+         **cfg.get("palette", {})}
+    base = Image.fromarray(_vgradient([(0, p["sky"][0]), (0.6, p["sky"][1]), (1, p["sky"][2])]).astype(np.uint8))
+    bokeh = Image.new("RGB", (SIZE, SIZE))
+    db_ = ImageDraw.Draw(bokeh)
+    for _ in range(70):
+        x, y = rng.uniform(0, SIZE), rng.uniform(SIZE * 0.35, SIZE)
+        r = rng.uniform(30, 110)
+        c = _hex(p["bokeh"][int(rng.integers(0, len(p["bokeh"])))]) * rng.uniform(0.25, 0.6)
+        db_.ellipse([x - r, y - r, x + r, y + r], fill=tuple(int(v) for v in c))
+    bokeh = bokeh.filter(ImageFilter.GaussianBlur(28))
+    a = np.asarray(base, dtype=float) + np.asarray(bokeh, dtype=float)
+    img = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+    # droplets and streaks on the glass
+    glass = Image.new("RGB", (SIZE, SIZE))
+    dg = ImageDraw.Draw(glass)
+    for _ in range(420):
+        x, y = rng.uniform(0, SIZE), rng.uniform(0, SIZE)
+        r = rng.uniform(3, 13)
+        dg.ellipse([x - r, y - r, x + r, y + r], outline=(150, 170, 180), width=2)
+        dg.ellipse([x - r * 0.3, y - r * 0.6, x + r * 0.1, y - r * 0.2], fill=(220, 230, 235))
+    for _ in range(22):
+        x, y0 = rng.uniform(0, SIZE), rng.uniform(0, SIZE * 0.7)
+        y1 = y0 + rng.uniform(120, 420)
+        pts = [(x + 6 * np.sin(k / 3) * rng.random(), y0 + (y1 - y0) * k / 20) for k in range(21)]
+        dg.line(pts, fill=(120, 140, 150), width=4)
+    a = np.asarray(img, dtype=float) + np.asarray(glass.filter(ImageFilter.GaussianBlur(1)), dtype=float) * 0.6
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+
+
+STYLES = {"rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
           "circuit": circuit}
 
 

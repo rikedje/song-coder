@@ -61,6 +61,7 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 | [Klockan fem](songs/klockan-fem/) | euforisk pianohouse, hackad röst-hook | 140 BPM, F-dur |
 | [När jag ska somna vaknar jag](songs/nar-jag-ska-somna-vaknar-jag/) | ambient/drone, avlägsna viskningar | 80 BPM, D-dur |
 | [Hemmaautomat](songs/hemmaautomat/) | Kraftwerk-inspirerad electro, vocoderprat om ett smart hem | 115 BPM, C-moll |
+| [Regnig söndag](songs/regnig-sondag/) | lo-fi hiphop i halvtid, regn, vinyl och filmrepliker | 128 BPM, F-dur |
 
 ## Ansvarsfriskrivning (läs det här)
 

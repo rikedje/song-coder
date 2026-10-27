@@ -1,0 +1,12 @@
+# Filmrepliker. Rent tal som mixen gör till gammal film/radio (bandpass, bitkross, tape).
+voice: en_US-lessac-high
+style: plain
+length_scale: 1.12
+
+lines:
+  - {section: intro, bar: 2, text: "It's raining again."}
+  - {section: loopA2, bar: 13, text: "Stay. There's nowhere we have to be today."}
+  - {section: B, bar: 1, text: "Listen. Like a thousand little drums on the window."}
+  - {section: B, bar: 9, text: "Do you want another cup of tea?"}
+  - {section: B2, bar: 14, text: "Let it rain."}
+  - {section: outro, bar: 2, text: "Sundays are made for this."}

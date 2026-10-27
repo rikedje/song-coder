@@ -10,7 +10,7 @@ import yaml
 
 from . import dsp
 from .cover import make_cover
-from .drums import DRUMS, FX
+from .drums import DRUMS, FX, LONG_FX
 from .dsp import SR, db
 from .instruments import INSTRUMENTS
 from .tags import write_tags
@@ -42,8 +42,8 @@ def load(song_dir):
 # --- pattern parsing -----------------------------------------------------
 
 def pattern_steps(pat):
-    if isinstance(pat, str) and " " not in pat.strip():
-        return list(pat.strip())  # compact drum string
+    if set(pat) <= set("xog. \n"):
+        return list("".join(pat.split()))  # drum string; spaces only group steps
     return pat.split()
 
 
@@ -115,6 +115,19 @@ class Song:
         self.total_bars = b
         self.n = int((b * self.bar + self.song.get("tail_seconds", 4)) * SR)
         self.tracks = {}
+        # humanize uses its own generator so songs without it keep their exact sound
+        self.humanize = self.song.get("humanize")
+        self.hrng = np.random.default_rng(self.song.get("seed", 1) + 7)
+
+    def swing_offset(self, i):
+        """Delay the off-beat of each swing unit (8ths or 16ths) by `swing` of a unit."""
+        sw = self.song.get("swing", 0.0)
+        if not sw:
+            return 0.0
+        unit = 2 if self.song.get("swing_unit", 16) == 8 else 1
+        if i % unit == 0 and (i // unit) % 2 == 1:
+            return sw * unit * self.step
+        return 0.0
 
     def buf(self, name):
         if name not in self.tracks:
@@ -168,12 +181,17 @@ class Song:
                                 continue
                             bar_in_sec = b0 + off + i // 16
                             t_in_sec = (b0 + off) * self.bar + i * self.step
-                            start = (sec_start * self.bar + t_in_sec) * SR
+                            t_in_sec += self.swing_offset(i)
+                            hv = 1.0
+                            if self.humanize:
+                                t_in_sec += self.humanize.get("time", 0.0) * (2 * self.hrng.random() - 1)
+                                hv = 1 + self.humanize.get("vel", 0.0) * (2 * self.hrng.random() - 1)
+                            start = max(0.0, (sec_start * self.bar + t_in_sec) * SR)
                             if kind in DRUMS:
                                 # cache per track: two tracks of one kind may differ in params
                                 if name not in drum_cache:
                                     drum_cache[name] = DRUMS[kind](cfg, self.rng)
-                                v = VEL[tok] * gain
+                                v = VEL[tok] * gain * hv
                                 self.place(name, drum_cache[name] * v, start)
                                 if kind == "kick":
                                     kicks.append(int(start))
@@ -190,19 +208,19 @@ class Song:
                                 x = chop_note(self.chop_samples(cfg)[tok.lstrip("@")],
                                               int(length * self.step * SR), chord_freqs(chord, cfg),
                                               cfg, self.rng)
-                                self.place(name, x * gain, start)
+                                self.place(name, x * gain * hv, start)
                                 continue
                             frac = t_in_sec / (bars * self.bar)
                             cm = c0 * (c1 / c0) ** frac
                             freqs, vel = resolve_token(tok, self.chord_at(section, bar_in_sec))
                             n_gate = int(length * self.step * cfg.get("legato", 0.88) * SR)
                             for f in freqs:
-                                note = INSTRUMENTS[kind](f * transpose, n_gate, vel * gain, cfg, cm, self.rng)
+                                note = INSTRUMENTS[kind](f * transpose, n_gate, vel * gain * hv, cfg, cm, self.rng)
                                 self.place(name, note, start)
             for fx in section.get("fx") or []:
                 start = (sec_start + fx.get("at", 0)) * self.bar * SR
                 g = db(fx.get("gain", 0.0))
-                if fx["type"] in ("riser", "downlifter"):
+                if fx["type"] in LONG_FX:
                     x = FX[fx["type"]]({}, self.rng, fx.get("bars", 4) * self.bar)
                 else:
                     x = FX[fx["type"]]({}, self.rng)
@@ -256,6 +274,12 @@ class Song:
                 y = dsp.sos_filter(y, "highpass", m["highpass"])
             if m.get("lowpass"):
                 y = dsp.sos_filter(y, "lowpass", m["lowpass"], order=4)
+            if m.get("downsample"):
+                k = int(m["downsample"])
+                y = np.repeat(y[:, ::k], k, axis=1)[:, : y.shape[1]]
+            if m.get("crush"):
+                q = 2 ** (m["crush"] - 1)
+                y = np.round(y * q) / q
             if m.get("duck"):
                 y = y * (1 - m["duck"] * duck)
             y = dsp.pan(y, m.get("pan", 0.0))
@@ -277,6 +301,12 @@ class Song:
     def master(self, x):
         mcfg = self.song.get("master", {})
         x = dsp.sos_filter(x, "highpass", 28)
+        lofi = mcfg.get("lofi")
+        if lofi:
+            x = dsp.tape(x, lofi.get("wow", 0.0015), lofi.get("wow_hz", 0.5),
+                         lofi.get("flutter", 0.0002), lofi.get("flutter_hz", 7.0))
+            x = dsp.sos_filter(x, "lowpass", lofi.get("lowpass", 9000), order=2)
+            x = dsp.soft_clip(x, lofi.get("drive", 1.5)) * 0.8
         x = dsp.compressor(x, mcfg.get("glue_threshold", -14), 2.0, 0.01, 0.15)
         # loudness: match RMS of the loudest blocks to target
         blk = int(0.4 * SR)

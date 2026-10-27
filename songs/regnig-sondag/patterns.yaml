@@ -1,0 +1,37 @@
+# Mönster, 16 steg per takt (sextondelar vid 128 BPM). Trummorna går i halvtid:
+# virveln på steg 9 (taktslag 3) låter som en 64 BPM boom-bap.
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3/4 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. Bb4) = absolut ton, ! = betoning
+
+kick_boom:  "x.....o...x....."
+kick_boom2: "x.....o...x...o."
+snare_half: "........x......."
+snare_pickup: "........x...g.o."
+hat_lazy:  "x...o...x...o..."
+hat_busy:  "x.o.x.ogx.o.x.o."
+rim_a:     "............x..."
+
+bass_walk: "r - - - - - - - . . r+ - r - - ."
+bass_hold: "r - - - - - - - - - - - - - - -"
+
+keys_hold: "C - - - - - - - - - - - - - - -"
+keys_comp: "C - - - - - - - - - . C - - - ."
+
+rest4: "................................................................"
+
+# Melodi över Gm9 – C13 – Fmaj9 – Dm9
+melody_a: >-
+  D5 - - - - - C5 - Bb4 - - - A4 - - -
+  G4 - - - - - - - E4 - - - F4 - G4 -
+  A4 - - - - - - - - - - - . . C5 -
+  E5 - - - D5 - C5 - A4 - - - - - . .
+
+# Melodi över Bbmaj7 – Am7 – Gm9 – C7sus
+melody_b: >-
+  F5 - - - E5 - D5 - - - - - A4 - - -
+  C5 - - - - - - - G4 - - - - - - -
+  Bb4 - - - A4 - G4 - - - F4 - G4 - - -
+  F4 - - - - - - - - - - - . . . .

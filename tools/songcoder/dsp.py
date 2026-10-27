@@ -181,6 +181,29 @@ def convolve_reverb(x, ir):
     return out
 
 
+@njit(cache=True)
+def _vardelay(x, delay):
+    n = x.shape[1]
+    out = np.zeros_like(x)
+    for i in range(n):
+        pos = i - delay[i]
+        if pos < 0:
+            continue
+        j = int(pos)
+        f = pos - j
+        if j + 1 < n:
+            for c in range(2):
+                out[c, i] = x[c, j] * (1 - f) + x[c, j + 1] * f
+    return out
+
+
+def tape(x, wow, wow_hz, flutter, flutter_hz):
+    """Tape wow/flutter: pitch wobble from a slowly modulated delay (depths in seconds)."""
+    t = np.arange(x.shape[1]) / SR
+    d = (wow + flutter) + wow * np.sin(2 * np.pi * wow_hz * t) + flutter * np.sin(2 * np.pi * flutter_hz * t)
+    return _vardelay(x, d * SR + 2)
+
+
 def soft_clip(x, drive):
     return np.tanh(drive * x) / np.tanh(drive)
 

@@ -1,7 +1,7 @@
 """Synthesized drum and FX one-shots. Each returns a stereo (2, n) sample."""
 import numpy as np
 
-from .dsp import SR, bandpass, decay, highpass, lowpass, osc_pulse, osc_sine, soft_clip, svf
+from .dsp import SR, bandpass, decay, highpass, lowpass, osc_pulse, osc_sine, soft_clip, sos_filter, svf
 
 
 def kick(p, rng):
@@ -105,5 +105,45 @@ def etom(p, rng):
     return np.stack([x, x])
 
 
+def _fade(x, seconds):
+    k = min(int(seconds * SR), x.shape[1] // 2)
+    ramp = np.linspace(0, 1, k)
+    x[:, :k] *= ramp
+    x[:, -k:] *= ramp[::-1]
+    return x
+
+
+def rain(p, rng, seconds):
+    """Rain on a window: soft broadband hiss plus scattered droplets."""
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    hiss = sos_filter(rng.standard_normal((2, n)), "bandpass", [400, 6000])
+    hiss *= 0.85 + 0.15 * np.sin(2 * np.pi * 0.07 * t + rng.random() * 6.28)
+    imp = np.zeros((2, n))
+    count = int(seconds * 30)
+    pos = rng.integers(0, n, count)
+    imp[rng.integers(0, 2, count), pos] = rng.exponential(1.0, count)
+    drops = np.stack([svf(imp[c], np.full(n, 2600.0), 4.0, 1) for c in range(2)])
+    return _fade(0.12 * hiss + 0.5 * drops, 2.0)
+
+
+def vinyl(p, rng, seconds):
+    """Record surface: faint hiss, crackle and the odd pop."""
+    n = int(seconds * SR)
+    hiss = sos_filter(rng.standard_normal((2, n)), "bandpass", [1500, 9000]) * 0.04
+    imp = np.zeros(n)
+    count = int(seconds * 12)
+    imp[rng.integers(0, n, count)] = rng.exponential(1.0, count) * rng.choice([-1, 1], count)
+    crackle = sos_filter(imp, "highpass", 1800)
+    pops = np.zeros(n)
+    big = int(seconds * 0.4)
+    pops[rng.integers(0, n, big)] = rng.uniform(1.5, 3.0, big)
+    pops = sos_filter(pops, "lowpass", 900)
+    x = hiss + (crackle + pops)[None, :] * 0.5
+    return _fade(x, 1.0)
+
+
 DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom}
-FX = {"crash": crash, "impact": impact, "riser": riser, "downlifter": downlifter}
+FX = {"crash": crash, "impact": impact, "riser": riser, "downlifter": downlifter,
+      "rain": rain, "vinyl": vinyl}
+LONG_FX = {"riser", "downlifter", "rain", "vinyl"}  # take a length in bars

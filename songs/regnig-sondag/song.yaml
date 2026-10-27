@@ -1,0 +1,135 @@
+# Regnig söndag – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, filmrepliker i lyrics.yaml.
+title: Regnig söndag
+bpm: 128          # trummorna går i halvtid, så känslan blir ~64 BPM boom-bap
+key: F major
+seed: 1207
+date: 2026-10-27
+genre: Lo-fi hip hop
+cover: {style: rainwindow}
+tail_seconds: 4
+fade_out_bars: 6
+
+# Swing på åttondelar (halvtidskänslans sextondelar) och små mänskliga fel
+swing: 0.28
+swing_unit: 8
+humanize: {time: 0.007, vel: 0.12}
+
+# ii – V – I – vi med jazziga utvidgningar, rotlösa voicings
+progression: [Gm9, C13, Fmaj9, Dm9]
+chords:
+  Gm9:    {root: G1,  notes: [F3, Bb3, D4, A4]}
+  C13:    {root: C2,  notes: [E3, A3, Bb3, D4]}
+  Fmaj9:  {root: F1,  notes: [E3, A3, C4, G4]}
+  Dm9:    {root: D2,  notes: [F3, A3, C4, E4]}
+  Bbmaj7: {root: Bb1, notes: [A3, D4, F4]}
+  Am7:    {root: A1,  notes: [G3, C4, E4]}
+  C7sus:  {root: C2,  notes: [F3, Bb3, D4, G4]}
+
+instruments:
+  kick:  {type: kick, pitch_hi: 110, pitch_lo: 48, decay: 0.24, drive: 1.3}
+  snare: {type: snare, decay: 0.2, drive: 1.4}
+  hat:   {type: hat, decay: 0.035}
+  rim:   {type: etom, pitch: 900, sweep: 0.3, decay: 0.03}
+  bass:  {type: softbass, cutoff: 320, env_amount: 0.8, decay: 0.6, sustain: 0.7, legato: 0.9}
+  keys:  {type: epiano, cutoff: 2600, decay: 2.0, index: 1.3, tremolo: 0.18, legato: 1.0}
+  lead:  {type: mono, osc: saw, cutoff: 900, env_amount: 0.6, resonance: 0.8, attack: 0.04, decay: 0.5, sustain: 0.7, release: 0.2, legato: 0.92}
+
+# Takter: intro 8 · loop A 16 · loop A2 16 · B 16 · loop A3 16 · B2 16 · outro 8 = 96 (3:00)
+sections:
+  - name: intro
+    bars: 8
+    tracks:
+      keys: {pattern: keys_hold, cutoff: [0.4, 1.0]}
+    tail:
+      bars: 2
+      tracks:
+        hat: {pattern: hat_lazy, gain: -6}
+    fx:
+      - {type: rain, at: 0, bars: 98, gain: 0}
+      - {type: vinyl, at: 0, bars: 98, gain: 0}
+
+  - name: loopA
+    bars: 16
+    tracks:
+      kick: kick_boom
+      snare: snare_half
+      hat: hat_lazy
+      bass: bass_walk
+      keys: keys_comp
+
+  - name: loopA2
+    bars: 16
+    tracks:
+      kick: [kick_boom, kick_boom, kick_boom, kick_boom2]
+      snare: snare_half
+      hat: hat_busy
+      rim: rim_a
+      bass: bass_walk
+      keys: keys_comp
+      lead: melody_a
+
+  - name: B
+    bars: 16
+    progression: [Bbmaj7, Am7, Gm9, C7sus]
+    tracks:
+      kick: {pattern: kick_boom, gain: -4}
+      hat: {pattern: hat_lazy, gain: -3}
+      bass: {pattern: bass_hold, gain: -2}
+      keys: {pattern: keys_hold, cutoff: [0.8, 0.6]}
+      lead: {pattern: [rest4, melody_b, rest4, melody_b], gain: -2}
+    tail:
+      bars: 1
+      tracks:
+        snare: snare_pickup
+
+  - name: loopA3
+    bars: 16
+    tracks:
+      kick: [kick_boom, kick_boom, kick_boom, kick_boom2]
+      snare: snare_half
+      hat: hat_busy
+      rim: rim_a
+      bass: bass_walk
+      keys: keys_comp
+      lead: {pattern: melody_a, transpose: 12, gain: -4}
+
+  - name: B2
+    bars: 16
+    progression: [Bbmaj7, Am7, Gm9, C7sus]
+    tracks:
+      kick: [kick_boom, kick_boom, kick_boom, kick_boom2]
+      snare: snare_half
+      hat: hat_busy
+      bass: bass_walk
+      keys: keys_comp
+      lead: melody_b
+
+  - name: outro
+    bars: 8
+    tracks:
+      keys: {pattern: keys_hold, cutoff: [1.0, 0.35]}
+      bass: {pattern: bass_hold, gain: -4}
+
+# Dammigt: bitkross och sänkt samplingsfrekvens på trummorna, telefonfilter på rösten
+mix:
+  kick:  {gain: -3, lowpass: 3500, downsample: 2, crush: 12}
+  snare: {gain: -4, reverb: 0.15, lowpass: 6000, downsample: 3, crush: 10}
+  hat:   {gain: -11, pan: 0.2, downsample: 2, crush: 10}
+  rim:   {gain: -8, pan: -0.25, downsample: 2}
+  bass:  {gain: -7, duck: 0.2}
+  keys:  {gain: -13, reverb: 0.25, delay: 0.1, lowpass: 5000}
+  lead:  {gain: -9, reverb: 0.3, delay: 0.25, lowpass: 3000, pan: 0.1}
+  voice: {gain: -1, reverb: 0.2, delay: 0.15, highpass: 350, lowpass: 3400, downsample: 2, crush: 11}
+  fx:    {gain: -12}
+
+fx_buses:
+  delay: {steps: 6, feedback: 0.35, damp: 0.25, return: -6, reverb: 0.3}
+  reverb: {seconds: 1.8, damping: 3500, return: -6}
+
+master:
+  glue_threshold: -18
+  target_rms_db: -12.0
+  ceiling_db: -1.0
+  saturation: 0
+  lofi: {wow: 0.0018, wow_hz: 0.45, flutter: 0.00015, flutter_hz: 6.5, lowpass: 9500, drive: 1.6}
