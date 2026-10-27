@@ -1,0 +1,25 @@
+# Avlägsna svenska viskningar. section + bar = var repliken börjar.
+voice: sv_SE-nst-medium
+style: whisper
+length_scale: 1.4
+air: 0.05   # lite diskant, så att inget väser
+
+lines:
+  - section: ytor
+    bar: 3
+    text: "Jag släcker lampan."
+  - section: ytor
+    bar: 10
+    text: "Tankarna tänds, en efter en."
+  - section: uppvaknande
+    bar: 4
+    text: "När jag ska somna, vaknar jag."
+  - section: uppvaknande
+    bar: 11
+    text: "Taket. Klockan. Andetagen."
+  - section: tillbaka
+    bar: 5
+    text: "Snart. Snart."
+  - section: tillbaka
+    bar: 11
+    text: "När jag ska somna, vaknar jag."

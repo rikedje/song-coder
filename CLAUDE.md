@@ -23,22 +23,22 @@ Python is uv-managed **3.12**, pinned via `.python-version`, `requires-python` a
 
 Songs are **data-driven**. Each `songs/<slug>/` contains only YAML and docs, and the shared engine in `tools/songcoder/` interprets them:
 
-- `song.yaml`: title, bpm, key, `date`, `genre`, `cover` (`style`: `sunset` | `nightcity`, optional `palette`/`subtitle`), chords plus a `progression` (one chord per bar, cycled from each section's start), `instruments` (track name → `type` plus synth params), `sections` (bars, `tracks` → pattern spec, optional `tail` that overrides tracks for the last N bars, `fx` one-shots), `mix` (per-track gain/pan/sends/`duck`), `fx_buses`, `master`.
+- `song.yaml`: title, bpm, key, `date`, `genre`, `cover` (`style`: `sunset` | `nightcity` | `dawnclock` | `nocturne`, optional `palette`/`subtitle`; long titles wrap), chords plus a `progression` (one chord per bar, cycled from each section's start), `instruments` (track name → `type` plus synth params), `sections` (bars, `tracks` → pattern spec, optional `tail` that overrides tracks for the last N bars, `fx` one-shots), `mix` (per-track gain/pan/sends/`duck`/`highpass`/`lowpass`), `fx_buses`, `master`.
 - `patterns.yaml`: 16 steps per bar; longer strings span several bars. The notation is documented at the top of the file (drums `x/o/g/.`; melodic tokens `r`, `1-3`, `C`, note names, `+`/`-` octaves, `-` hold, `!` accent).
-- `lyrics.yaml`: Piper voice name, `style` (`robot`: pitched vocoder with `carrier` notes; `whisper`: noise-carrier vocoder), and lines placed by section and bar.
+- `lyrics.yaml`: Piper voice name, `style` (`robot`: pitched vocoder with `carrier` notes; `whisper`: noise-carrier vocoder; `plain`), `lines` placed by section and bar (a line can override `style`), and optional `chops`: single words TTS'd separately and triggered from patterns as `@name` on a track whose instrument `type: chop` (vocoded to the bar's chord by `tune`; a chop rings until the next hit).
 
 Engine modules:
 - `dsp.py`: numba oscillators/SVF, delay, convolution reverb, compressor, limiter.
-- `instruments.py`: pitched voices registered in `INSTRUMENTS` (`distbass`, `softbass`, `pluck`, `epiano`, `superpad`, `superlead`).
+- `instruments.py`: pitched voices registered in `INSTRUMENTS` (`distbass`, `softbass`, `pluck`, `epiano`, `piano`, `bell`, `superpad`, `superlead`).
 - `drums.py`: the `DRUMS` and `FX` one-shots.
-- `voice.py`: Piper via subprocess, cached in `songs/<slug>/build/voice/`, plus the robot and whisper processors.
+- `voice.py`: Piper via subprocess, cached in `songs/<slug>/build/voice/`, plus the robot, whisper and plain processors and vocal chops.
 - `cover.py`: procedural 1500×1500 cover art using the committed font `fonts/SpaceGrotesk.ttf` (OFL). Pillow's default font lacks å/ä/ö.
 - `tags.py`: ID3v2.3 tags via mutagen (title, artist `song-coder`, date, genre, BPM, key, lyrics, embedded APIC cover).
 - `render.py`: sequencer → per-track buffers → kick sidechain → buses → master (`saturation: 0` disables soft clipping) → 24-bit WAV, lameenc MP3, `out/cover.jpg`, tags.
 
 Rendering prints per-track RMS/peak, which is used to balance `mix`. Chord-tone indices past the chord size wrap an octave up.
 
-When a new song needs a new sound, add an instrument type or FX to the engine rather than writing song-specific code, and keep existing songs rendering.
+When a new song needs a new sound, add an instrument type or FX to the engine rather than writing song-specific code. Keep existing songs bit-identical: compare `ffmpeg -i out/song.mp3 -map 0:a -c copy -f md5 -` before and after, and only consume `self.rng` in new code paths.
 
 ## Hard requirements from `mall.md`
 

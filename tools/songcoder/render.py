@@ -14,7 +14,7 @@ from .drums import DRUMS, FX
 from .dsp import SR, db
 from .instruments import INSTRUMENTS
 from .tags import write_tags
-from .voice import robotize, tts, whisper
+from .voice import chop_note, load_chops, plain, robotize, tts, whisper
 
 VEL = {"x": 1.0, "o": 0.6, "g": 0.35}
 NOTE_RE = re.compile(r"^([A-G])(#|b)?(-?\d)$")
@@ -65,6 +65,12 @@ def resolve_token(tok, chord):
     else:
         f = note_freq(base)
     return [f * 2 ** octave], vel
+
+
+def chord_freqs(chord, cfg):
+    """Chord tones used as the vocoder carrier for tuned vocal chops."""
+    shift = 2 ** cfg.get("carrier_octave", 0)
+    return [note_freq(n) * shift for n in chord["notes"]]
 
 
 def normalize_spec(spec):
@@ -174,6 +180,17 @@ class Song:
                             length = 1
                             while i + length < len(steps) and steps[i + length] == "-":
                                 length += 1
+                            if kind == "chop":
+                                # a vocal slice rings until the next slice, rests don't cut it
+                                length = 1
+                                while i + length < len(steps) and steps[i + length] in ("-", "."):
+                                    length += 1
+                                chord = self.chord_at(section, bar_in_sec)
+                                x = chop_note(self.chop_samples(cfg)[tok.lstrip("@")],
+                                              int(length * self.step * SR), chord_freqs(chord, cfg),
+                                              cfg, self.rng)
+                                self.place(name, x * gain, start)
+                                continue
                             frac = t_in_sec / (bars * self.bar)
                             cm = c0 * (c1 / c0) ** frac
                             freqs, vel = resolve_token(tok, self.chord_at(section, bar_in_sec))
@@ -191,17 +208,25 @@ class Song:
                 self.place("fx", x * g, start)
         return kicks
 
+    def chop_samples(self, cfg):
+        if not hasattr(self, "_chops"):
+            self._chops = load_chops(self.lyrics, self.dir / "build" / "voice")
+        return self._chops
+
     def render_voice(self):
         if not self.lyrics:
             return
         cfg = self.lyrics
         carrier = [note_freq(n) for n in cfg.get("carrier", ["F2", "F3"])]
         sec_by_name = {s["name"]: b for b, s in self.sections}
-        for line in cfg["lines"]:
+        for line in cfg.get("lines") or []:
             x = tts(line["text"], cfg["voice"], self.dir / "build" / "voice",
                     cfg.get("length_scale", 1.0))
-            if cfg.get("style", "robot") == "whisper":
+            style = line.get("style", cfg.get("style", "robot"))
+            if style == "whisper":
                 y = whisper(x, self.rng, cfg.get("air", 0.12))
+            elif style == "plain":
+                y = plain(x)
             else:
                 y = robotize(x, carrier, self.rng, cfg.get("vocoder_mix", 0.7))
             bar = sec_by_name[line["section"]] + line.get("bar", 0)
@@ -228,6 +253,8 @@ class Song:
             y = x * db(m.get("gain", 0.0))
             if m.get("highpass"):
                 y = dsp.sos_filter(y, "highpass", m["highpass"])
+            if m.get("lowpass"):
+                y = dsp.sos_filter(y, "lowpass", m["lowpass"], order=4)
             if m.get("duck"):
                 y = y * (1 - m["duck"] * duck)
             y = dsp.pan(y, m.get("pan", 0.0))

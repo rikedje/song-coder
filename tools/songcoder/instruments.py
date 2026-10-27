@@ -113,7 +113,50 @@ def epiano(freq, n_gate, vel, p, cm, rng):
     return np.stack([y * (1 + trem), y * (1 - trem)])
 
 
+def piano(freq, n_gate, vel, p, cm, rng):
+    """Bright additive house piano: slightly inharmonic, two detuned strings, hammer click."""
+    env = adsr(n_gate, 0.002, p.get("decay", 2.0), p.get("sustain", 0.0), p.get("release", 0.25))
+    n = env.shape[0]
+    t = np.arange(n) / SR
+    out = np.zeros((2, n))
+    bright = p.get("brightness", 1.0) * cm
+    for k in range(1, p.get("partials", 14) + 1):
+        fk = k * freq * np.sqrt(1 + 0.0004 * k * k)
+        if fk > 16000:
+            break
+        amp = k ** -1.1 * vel ** ((k - 1) / (6 * bright))
+        dec = np.exp(-t * (0.6 + 0.35 * k / bright))
+        for c, det in enumerate((-1.5, 1.5)):
+            ph = rng.random() * 6.28
+            out[c] += amp * dec * np.sin(2 * np.pi * fk * _cents(det) * t + ph)
+    hammer = lowpass_noise(n, rng) * np.exp(-t / 0.004) * 0.25
+    out += hammer
+    return out * env * vel * 0.5
+
+
+def bell(freq, n_gate, vel, p, cm, rng):
+    """Soft FM bell: inharmonic modulator, gentle attack, long ring, lowpassed."""
+    n = int((n_gate / SR + p.get("ring", 4.0)) * SR)
+    t = np.arange(n) / SR
+    att = np.clip(t / p.get("attack", 0.03), 0, 1)
+    env = att * np.exp(-t / p.get("decay", 1.6))
+    index = p.get("index", 1.2) * np.exp(-t / 0.8)
+    out = []
+    for det in (-3, 3):
+        f = freq * _cents(det)
+        mod = np.sin(2 * np.pi * f * p.get("ratio", 3.5) * t + rng.random() * 6.28)
+        x = np.sin(2 * np.pi * f * t + index * mod)
+        out.append(svf(x, np.full(n, p.get("cutoff", 4000) * cm), 0.707, 0))
+    return np.stack(out) * env * vel * 0.6
+
+
+def lowpass_noise(n, rng):
+    return svf(rng.standard_normal(n), np.full(n, 3000.0), 0.707, 0)
+
+
 INSTRUMENTS = {
+    "piano": piano,
+    "bell": bell,
     "distbass": distbass,
     "softbass": softbass,
     "pluck": pluck,

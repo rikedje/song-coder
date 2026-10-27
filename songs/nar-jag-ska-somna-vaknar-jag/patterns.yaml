@@ -1,0 +1,43 @@
+# Mönster, 16 steg per takt (sextondelar). Längre mönster spänner flera takter.
+#
+# Melodi:   . = paus, - = håll föregående ton (även över taktstreck)
+#           r = ackordets grundton, 1/2/3/4 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. F#4) = absolut ton
+
+# Orgelpunkt på D som ligger kvar under allt, fyra takter i taget
+drone_d: >-
+  D2 - - - - - - - - - - - - - - -
+  - - - - - - - - - - - - - - - -
+  - - - - - - - - - - - - - - - -
+  - - - - - - - - - - - - - - - -
+
+# Ackorden ligger två takter
+pad_2bar: >-
+  C - - - - - - - - - - - - - - -
+  - - - - - - - - - - - - - - - -
+
+# Glesa klockor: enstaka ackordtoner i höga lägen, som droppar
+bells_sparse: >-
+  3+ . . . . . . . . . 1+ . . . . .
+  . . . . . . . . . . . . . . . .
+  . . . . 2+ . . . . . . . . . . .
+  . . . . . . . . . . 4+ . . . . .
+
+bells_more: >-
+  3+ . . . . . 2+ . . . 1+ . . . . .
+  . . . . 4+ . . . . . . . 3+ . . .
+  . . 2+ . . . . . 1++ . . . . . . .
+  . . . . . . 3+ . . . . . . . 2+ .
+
+# Långsam, nästan stillastående melodi över åtta takter
+melody_a: >-
+  A4 - - - - - - - - - - - - - - -
+  - - - - - - - - F#4 - - - - - - -
+  B4 - - - - - - - - - - - C#5 - - -
+  - - - - - - - - - - - - - - - -
+  D5 - - - - - - - - - - - - - - -
+  - - - - - - - - C#5 - - - B4 - - -
+  A4 - - - - - - - - - - - - - - -
+  - - - - - - - - . . . . . . . .
+
+rest8: "................................................................................................................................"

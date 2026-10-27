@@ -78,3 +78,41 @@ def robotize(x, carrier_freqs, rng, vocoder_mix=0.7, ring_hz=55.0):
     d = int(0.013 * SR)
     right = np.concatenate([np.zeros(d), y[:-d]])
     return np.stack([0.85 * y + 0.15 * right, 0.85 * right + 0.15 * y])
+
+
+def plain(x):
+    """Clean spoken voice: rumble removed, slight stereo width."""
+    y = sos_filter(x, "highpass", 90)
+    d = int(0.011 * SR)
+    right = np.concatenate([np.zeros(d), y[:-d]])
+    return np.stack([0.9 * y + 0.1 * right, 0.9 * right + 0.1 * y])
+
+
+def _trim(x, floor_db=-38.0):
+    env = np.abs(x)
+    keep = np.nonzero(env > env.max() * 10 ** (floor_db / 20))[0]
+    return x[keep[0]: keep[-1] + 1] if keep.size else x
+
+
+def load_chops(cfg, cache_dir):
+    """TTS each chop word separately so every slice is a clean one-shot."""
+    return {name: _trim(tts(text, cfg["voice"], cache_dir, cfg.get("chop_length_scale", 0.95)))
+            for name, text in cfg["chops"].items()}
+
+
+def chop_note(sample, n_gate, carrier_freqs, cfg, rng):
+    """Play a vocal slice for at most n_gate samples, tuned to the chord by a vocoder."""
+    pitch = cfg.get("pitch", 0)
+    x = signal.resample_poly(sample, 100, int(round(100 * 2 ** (pitch / 12)))) if pitch else sample
+    x = x[: max(n_gate, 1)].copy()
+    f = min(int(0.006 * SR), x.shape[0] // 2)
+    if f:
+        x[:f] *= np.linspace(0, 1, f)
+        x[-f:] *= np.linspace(1, 0, f)
+    tune = cfg.get("tune", 0.5)
+    if tune:
+        voc = vocoder(x, carrier_freqs, rng, bands=18, lo=180.0, hi=8000.0)
+        x = tune * voc + (1 - tune) * x
+    d = int(0.008 * SR)
+    right = np.concatenate([np.zeros(d), x])[: x.shape[0]]
+    return np.stack([x, 0.85 * right + 0.15 * x])

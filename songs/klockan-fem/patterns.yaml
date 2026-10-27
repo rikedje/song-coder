@@ -1,0 +1,46 @@
+# Mönster, 16 steg per takt (sextondelar). Längre mönster spänner flera takter.
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. Bb4) = absolut ton, ! = betoning
+# Röst:     @a, @b … = röstklipp ur lyrics.yaml (chops), - = låt klippet klinga längre
+
+kick_four: "x...x...x...x..."
+clap_back: "....x.......x..."
+clap_roll2: "o.o.o.o.o.o.o.o.xxxxxxxxxxxxxxxx"
+clap_roll4: "g...g...g...g...o.o.o.o.o.o.o.o.oooooooooooooooo.xxxxxxxxxxxxxxx"
+hat_16:   "go.ogo.ogo.ogo.o"
+ohat_off: "..x...x...x...x."
+
+bass_off:  ". . r . . . r . . . r . . . r+ ."
+bass_roll: ". . r r . . r . . . r r . r+ r ."
+
+piano_hold:  "C! - - - - - - - - - - - - - - -"
+piano_stab:  "C! . . C . . C . . . C . . C . ."
+piano_stab2: "C! - . C . . C - . C . . C . C ."
+
+pad_bar: "C - - - - - - - - - - - - - - -"
+
+arp_up: "1 2 3 1+ 2+ 3+ 1++ 3+ 1 2 3 1+ 2+ 3+ 2+ 1+"
+
+# Pianoriff över F – C – Dm – Bb
+riff_a: >-
+  C5! . A4 . C5 . F5 . . . E5 . C5 . . .
+  G4 . C5 . E5! . G5 . . . E5 . C5 . . .
+  A4 . D5 . F5! . A5 . . . G5 . F5 . . .
+  F5! . D5 . Bb4 . D5 . F5 - - - E5 - - -
+
+# Riff för variationsvarvet över Dm – Bb – F – C
+riff_b: >-
+  A5! . F5 . D5 . F5 . . . A5 . G5 . F5 .
+  F5! . D5 . Bb4 . D5 . . . F5 . E5 . D5 .
+  C5 . F5 . A5! . C6 . . . A5 . G5 . F5 .
+  E5 . G5 . C6! . G5 . E5 - - - D5 - - -
+
+# Röstkroken: "don't wanna go home … one more song"
+vox_hook: >-
+  @a - @b - - @c - @d - - - - - . . .
+  @a - @b - - @c - @d - - - @e - - @f -
+vox_stutter: "@d . @d . @d @d . . @a . @b . @c . @d -"
+vox_sparse:  "@d - - - - - - - . . . . . . . ."

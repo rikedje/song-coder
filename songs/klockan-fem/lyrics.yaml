@@ -1,0 +1,19 @@
+# Röstklipp (chops) triggas från patterns.yaml som @a, @b … och stäms efter ackorden.
+# Varje klipp läses in separat av talsyntesen så att det blir ett rent "sample".
+voice: en_US-lessac-high
+style: plain
+chop_length_scale: 0.75
+
+chops:
+  a: "don't"
+  b: "wanna"
+  c: "go"
+  d: "home!"
+  e: "one more"
+  f: "song."
+
+# Hela frasen sägs en gång, rent, i pausen
+lines:
+  - section: paus
+    bar: 1
+    text: "It's five in the morning. And I don't wanna go home."

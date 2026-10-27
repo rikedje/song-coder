@@ -1,0 +1,167 @@
+# Klockan fem – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, röstklipp och text i lyrics.yaml.
+title: Klockan fem
+bpm: 140
+key: F major
+seed: 500
+date: 2026-10-27
+genre: House
+cover: {style: dawnclock, hour: 5, minute: 0}
+tail_seconds: 4
+fade_out_bars: 6
+
+# Samma fyrtaktsloop hela vägen: I – V – vi – IV (F – C – Dm – Bb).
+# Variationsvarvet vänder på den: vi – IV – I – V (Dm – Bb – F – C).
+progression: [F, C, Dm, Bb]
+chords:
+  F:  {root: F2,  notes: [A3, C4, F4]}
+  C:  {root: C2,  notes: [G3, C4, E4]}
+  Dm: {root: D2,  notes: [A3, D4, F4]}
+  Bb: {root: Bb1, notes: [Bb3, D4, F4]}
+
+instruments:
+  kick:  {type: kick, pitch_hi: 160, pitch_lo: 50, decay: 0.2, drive: 1.6}
+  clap:  {type: snare, decay: 0.14, drive: 1.2}
+  hat:   {type: hat, decay: 0.03}
+  ohat:  {type: ohat, decay: 0.12}
+  bass:  {type: softbass, cutoff: 600, env_amount: 2.5, decay: 0.2, sustain: 0.5, legato: 0.8}
+  piano: {type: piano, brightness: 1.2, decay: 1.6, legato: 0.9}
+  riff:  {type: piano, brightness: 1.4, decay: 1.2, legato: 0.95}
+  pad:   {type: superpad, cutoff: 2200, voices: 7, spread: 22, attack: 0.4, release: 1.2, legato: 1.0}
+  arp:   {type: pluck, cutoff: 2600, resonance: 1.5, legato: 0.6}
+  vox:   {type: chop, tune: 0.55, carrier_octave: 0}
+
+# Takter: intro 8 · varv1 16 · varv2 16 · paus 8 · varv3 24 · varv4 24 · outro 8 = 104 (≈3:02)
+sections:
+  - name: intro
+    bars: 8
+    tracks:
+      piano: {pattern: piano_hold, cutoff: [0.4, 0.9]}
+      vox: {pattern: vox_sparse, gain: -4}
+      hat: {pattern: hat_16, gain: -6}
+    fx:
+      - {type: riser, at: 6, bars: 2, gain: -4}
+
+  - name: varv1
+    bars: 16
+    tracks:
+      kick: kick_four
+      clap: clap_back
+      hat: hat_16
+      ohat: ohat_off
+      bass: bass_off
+      piano: piano_stab
+      pad: {pattern: pad_bar, gain: -3}
+    fx:
+      - {type: crash, at: 0}
+
+  - name: varv2
+    bars: 16
+    tracks:
+      kick: kick_four
+      clap: clap_back
+      hat: hat_16
+      ohat: ohat_off
+      bass: bass_off
+      piano: piano_stab2
+      pad: pad_bar
+      arp: {pattern: arp_up, cutoff: [0.6, 1.1]}
+      vox: vox_hook
+    tail:
+      bars: 1
+      tracks:
+        kick: null
+    fx:
+      - {type: crash, at: 0}
+
+  - name: paus
+    bars: 8
+    tracks:
+      piano: {pattern: piano_hold, gain: -2}
+      riff: {pattern: riff_a, gain: -3}
+      pad: {pattern: pad_bar, cutoff: [0.7, 1.2]}
+      vox: {pattern: vox_sparse, gain: -2}
+    tail:
+      bars: 4
+      tracks:
+        clap: clap_roll4
+        kick: kick_four
+    fx:
+      - {type: riser, at: 4, bars: 4}
+
+  - name: varv3
+    bars: 24
+    tracks:
+      kick: kick_four
+      clap: clap_back
+      hat: hat_16
+      ohat: ohat_off
+      bass: bass_off
+      piano: piano_stab2
+      riff: riff_a
+      pad: pad_bar
+      arp: arp_up
+      vox: vox_hook
+    fx:
+      - {type: impact, at: 0, gain: -6}
+      - {type: crash, at: 0}
+      - {type: crash, at: 8, gain: -4}
+      - {type: crash, at: 16, gain: -4}
+
+  - name: varv4
+    bars: 24
+    progression: [Dm, Bb, F, C]
+    tracks:
+      kick: kick_four
+      clap: clap_back
+      hat: hat_16
+      ohat: ohat_off
+      bass: bass_roll
+      piano: piano_stab
+      riff: {pattern: riff_b, gain: -2}
+      pad: pad_bar
+      arp: arp_up
+      vox: [vox_hook, vox_stutter, vox_stutter]
+    tail:
+      bars: 2
+      tracks:
+        clap: clap_roll2
+    fx:
+      - {type: crash, at: 0}
+      - {type: crash, at: 12, gain: -4}
+
+  - name: outro
+    bars: 8
+    tracks:
+      kick: kick_four
+      hat: hat_16
+      ohat: ohat_off
+      piano: {pattern: piano_hold, cutoff: [0.9, 0.35]}
+      pad: {pattern: pad_bar, cutoff: [1.0, 0.4]}
+      vox: {pattern: vox_sparse, gain: -3}
+    fx:
+      - {type: crash, at: 0}
+
+# gain i dB, pan -1..1, sändningar 0..1, duck = sidechain-djup från kicken
+mix:
+  kick:  {gain: -4}
+  clap:  {gain: -7, reverb: 0.3}
+  hat:   {gain: -16, pan: 0.2, reverb: 0.05}
+  ohat:  {gain: -14, pan: -0.15, reverb: 0.08}
+  bass:  {gain: -2, duck: 0.8}
+  piano: {gain: -7, duck: 0.4, reverb: 0.25, delay: 0.08, highpass: 120}
+  riff:  {gain: -4, duck: 0.3, reverb: 0.3, delay: 0.25, highpass: 200, pan: 0.1}
+  pad:   {gain: -13, duck: 0.8, reverb: 0.4, highpass: 200}
+  arp:   {gain: -13, duck: 0.5, delay: 0.35, reverb: 0.15, pan: -0.1}
+  vox:   {gain: -4, duck: 0.3, reverb: 0.22, delay: 0.2, highpass: 150}
+  voice: {gain: -3, reverb: 0.3, delay: 0.15, highpass: 120}
+  fx:    {gain: -12, reverb: 0.4}
+
+fx_buses:
+  delay: {steps: 3, feedback: 0.4, damp: 0.3, return: -5, reverb: 0.3}
+  reverb: {seconds: 2.4, damping: 6000, return: -5}
+
+master:
+  glue_threshold: -14
+  target_rms_db: -10.0
+  ceiling_db: -1.0

@@ -116,7 +116,79 @@ def nightcity(cfg, rng):
     return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
 
-STYLES = {"sunset": sunset, "nightcity": nightcity}
+def dawnclock(cfg, rng):
+    """Dawn sky with light rays and a large clock face; `hour`/`minute` set the hands."""
+    p = {"sky": ["#2b1a4f", "#c94b8a", "#ff9e6b", "#ffe2a0"], "rays": "#fff2c8",
+         "clock": "#fff8ec", **cfg.get("palette", {})}
+    sky = _vgradient([(0, p["sky"][0]), (0.4, p["sky"][1]), (0.75, p["sky"][2]), (1, p["sky"][3])])
+    img = Image.fromarray(sky.astype(np.uint8))
+    # soft rays from below the frame
+    rays = Image.new("RGB", (SIZE, SIZE))
+    dr = ImageDraw.Draw(rays)
+    rc = tuple(int(v * 0.22) for v in _hex(p["rays"]))
+    ox, oy = SIZE // 2, SIZE + 200
+    for a in np.linspace(-1.2, 1.2, 15):
+        w = 0.035
+        pts = [(ox, oy)] + [(ox + 3000 * np.sin(a + s), oy - 3000 * np.cos(a + s)) for s in (-w, w)]
+        dr.polygon(pts, fill=rc)
+    # rays are light, so they are added to the sky rather than painted over it
+    soft = np.asarray(rays.filter(ImageFilter.GaussianBlur(18)), dtype=float)
+    img = Image.fromarray(np.clip(sky + soft, 0, 255).astype(np.uint8))
+    # clock
+    layer = Image.new("RGB", (SIZE, SIZE))
+    d = ImageDraw.Draw(layer)
+    cc = tuple(int(v) for v in _hex(p["clock"]))
+    cx, cy, r = SIZE // 2, int(SIZE * 0.6), 380
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=cc, width=10)
+    for k in range(12):
+        a = k / 12 * 2 * np.pi
+        r0 = r - (60 if k % 3 == 0 else 35)
+        d.line([(cx + r0 * np.sin(a), cy - r0 * np.cos(a)),
+                (cx + (r - 18) * np.sin(a), cy - (r - 18) * np.cos(a))], fill=cc, width=10 if k % 3 == 0 else 5)
+    hour, minute = cfg.get("hour", 5), cfg.get("minute", 0)
+    for frac, length, width in (((hour % 12 + minute / 60) / 12, r * 0.52, 18), (minute / 60, r * 0.8, 10)):
+        a = frac * 2 * np.pi
+        d.line([(cx, cy), (cx + length * np.sin(a), cy - length * np.cos(a))], fill=cc, width=width)
+    d.ellipse([cx - 22, cy - 22, cx + 22, cy + 22], fill=cc)
+    return _glow(img, layer, 22, 0.5)
+
+
+def nocturne(cfg, rng):
+    """Sleepless night: blurred moon behind drifting mist bands, a few faint stars."""
+    p = {"sky": ["#04050f", "#0d1433", "#1d2552", "#2b2f5e"], "moon": "#e9e6ff",
+         "mist": "#8e8fd6", **cfg.get("palette", {})}
+    sky = _vgradient([(0, p["sky"][0]), (0.4, p["sky"][1]), (0.8, p["sky"][2]), (1, p["sky"][3])])
+    _stars(sky, rng, 180, SIZE)
+    yy, xx = np.mgrid[0:SIZE, 0:SIZE]
+    cx, cy, r = int(SIZE * 0.66), int(SIZE * 0.5), 210
+    dist = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2)
+    moon = _hex(p["moon"])
+    disc = np.clip((r - dist) / 4, 0, 1)
+    shadow = np.clip((np.sqrt((xx - cx + 90) ** 2 + (yy - cy + 40) ** 2) - r * 0.95) / 6, 0, 1)
+    halo = np.exp(-np.maximum(dist - r, 0) / 160) * 0.35
+    a = sky + (disc * (0.15 + 0.85 * shadow))[..., None] * moon * 0.9 + halo[..., None] * moon * 0.4
+    mist = np.zeros(SIZE)
+    for _ in range(6):
+        y0, w = rng.uniform(0.45, 0.95) * SIZE, rng.uniform(25, 70)
+        mist += np.exp(-((np.arange(SIZE) - y0) / w) ** 2) * rng.uniform(0.08, 0.18)
+    a = a + mist[:, None, None] * _hex(p["mist"])
+    img = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+    return img.filter(ImageFilter.GaussianBlur(1.5))
+
+
+STYLES = {"sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne}
+
+
+def _wrap(d, text, font, max_w):
+    lines, cur = [], ""
+    for word in text.split():
+        t = f"{cur} {word}".strip()
+        if cur and d.textlength(t, font=font) > max_w:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = t
+    return lines + [cur]
 
 
 def _text(img, title, subtitle, color):
@@ -125,8 +197,10 @@ def _text(img, title, subtitle, color):
     big.set_variation_by_name("Bold")
     small = ImageFont.truetype(str(FONT), 42)
     small.set_variation_by_name("Medium")
-    for xy, txt, font in (((90, 100), title.upper(), big), ((96, 250), subtitle, small),
-                          ((96, SIZE - 110), "song-coder", small)):
+    lines = _wrap(d, title.upper(), big, SIZE - 180)
+    items = [((90, 100 + 140 * k), line, big) for k, line in enumerate(lines)]
+    items += [((96, 250 + 140 * (len(lines) - 1)), subtitle, small), ((96, SIZE - 110), "song-coder", small)]
+    for xy, txt, font in items:
         d.text((xy[0] + 3, xy[1] + 4), txt, font=font, fill=(0, 0, 0))
         d.text(xy, txt, font=font, fill=color)
 

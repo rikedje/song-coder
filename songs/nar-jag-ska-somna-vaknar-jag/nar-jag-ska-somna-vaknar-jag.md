@@ -1,0 +1,23 @@
+# När jag ska somna vaknar jag
+
+# Låtprompt – kort mall
+
+Gör en färdig, lyssningsbar låt av beskrivningen nedan. Leverans: `out/song.wav` och `out/song.mp3` med allt inmixat – instrument, trummor, effekter och röst om sådan anges. Den ska låta som en färdig låt, inte en demo.
+
+Välj själv ljudmotor, ljudbibliotek och röstverktyg. Enda kravet: offline, installerbart i detta repo utan manuella steg, inga molntjänster. Fråga inte – besluta. Allt du inte får veta nedan väljer du själv i låtens anda, och du skriver dina val i `NOTES.md`.
+
+Allt ska gå att rendera om med ett kommando. Noter och text ska ligga i läsbara filer skilda från koden. Kontrollera att mp3:an spelar hela längden innan du är klar. Stanna inte för godkännande.
+
+---
+
+**Känsla och referenser:** Ambient/drone – stilla och svepande. Referenser: Brian Eno, Stars of the Lid.
+
+**Tempo / tonart / längd:** Långsamt, ca 80 BPM, ca 3 min. Tonart: välj själv.
+
+**Form:** Fritt flödande – långsam förändring utan tydliga delar.
+
+**Ljudbild:** Stort och luftigt – långa pads, klockor, långt rum, inga trummor.
+
+**Röst:** Avlägsen viskning – några ord på svenska som nästan försvinner i rummet. Text: skriv själv om "När jag ska somna så vaknar jag".
+
+**Får inte finnas:** Inga skarpa ljud – inga hårda attacker eller höga frekvenser som sticker.
