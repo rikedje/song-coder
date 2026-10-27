@@ -1,0 +1,40 @@
+# Mönster, 16 steg per takt (sextondelar). Längre mönster spänner flera takter.
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. Ab4) = absolut ton, ! = betoning
+
+kick_four: "x...x...x...x..."
+kick_push: "x...x...x...x.o."
+
+snare_back: "....x.......x..."
+snare_fill: "....x.......xoxx"
+snare_roll4: "g...g...g...g...o.o.o.o.o.o.o.o.ooooooooooooooooxxxxxxxxxxxxxxxx"
+
+hat_8:    "x.o.x.o.x.o.x.o."
+hat_drop: "go.ogo.ogo.ogo.o"
+ohat_off: "..x...x...x...x."
+
+bass_build: "r! . r . r . r . r! . r . r . r+ ."
+bass_drive: ". r r r . r r r . r r r . r+ r r"
+bass_hold:  "r - - - - - - - - - - - - - - -"
+
+arp_8:  "1 . 3 . 1+ . 2 . 3 . 1+ . 3+ . 2+ ."
+arp_16: "1! 2 3 1+ 2 3 1+ 2+ 3! 1+ 2+ 3+ 1+ 2+ 3 2"
+
+pad_bar: "C - - - - - - - - - - - - - - -"
+
+# Lead över Fm – Db – Bbm – C (4 takter)
+lead_a: >-
+  C5! - - - Ab4 - - - F4 - - - G4 - Ab4 -
+  F5! - - - - - Eb5 - Db5 - - - C5 - Db5 -
+  Bb4! - - - Db5 - - - F5 - - - Eb5 - Db5 -
+  C5! - - - - - - - E5 - - - G5 - - -
+
+# Högre variant för andra droppen
+lead_b: >-
+  F5! - - - Eb5 - - - C5 - - - Db5 - Eb5 -
+  F5! - - - Ab5 - - - F5 - Eb5 - Db5 - C5 -
+  Db5! - - - F5 - - - Bb5 - - - Ab5 - F5 -
+  G5! - - - - - - - E5 - - - C5 - . .

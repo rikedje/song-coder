@@ -1,0 +1,150 @@
+# Midnattsmotor – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, text i lyrics.yaml.
+title: Midnattsmotor
+bpm: 125
+key: F minor
+seed: 1984
+tail_seconds: 4
+fade_out_bars: 6
+
+# i – VI – iv – V (harmonisk moll, C-dur ger dragningen tillbaka till Fm)
+progression: [Fm, Db, Bbm, C]
+chords:
+  Fm:  {root: F2,  notes: [F3, Ab3, C4]}
+  Db:  {root: Db2, notes: [F3, Ab3, Db4]}
+  Bbm: {root: Bb1, notes: [F3, Bb3, Db4]}
+  C:   {root: C2,  notes: [E3, G3, C4]}
+
+instruments:
+  kick:  {type: kick, pitch_hi: 190, pitch_lo: 47, decay: 0.22, drive: 2.6}
+  snare: {type: snare, decay: 0.17}
+  hat:   {type: hat, decay: 0.028}
+  ohat:  {type: ohat, decay: 0.14}
+  bass:  {type: distbass, cutoff: 650, drive: 3.5, resonance: 1.4, legato: 0.8}
+  arp:   {type: pluck, cutoff: 2200, resonance: 2.2, legato: 0.7}
+  pad:   {type: superpad, cutoff: 1700, voices: 7, spread: 20, legato: 1.0}
+  lead:  {type: superlead, cutoff: 4200, drive: 1.8}
+  lead2: {type: superlead, cutoff: 2600, drive: 1.4}
+
+# Takter: intro 16 · build 16 · drop1 24 · break 16 · drop2 32 · outro 8 = 112 (≈3:35)
+sections:
+  - name: intro
+    bars: 16
+    tracks:
+      pad: {pattern: pad_bar, cutoff: [0.25, 0.6]}
+      arp: {pattern: arp_8, cutoff: [0.2, 0.45], gain: -3}
+    tail:
+      bars: 4
+      tracks:
+        ohat: {pattern: ohat_off, gain: -6}
+    fx:
+      - {type: impact, at: 0, gain: -4}
+      - {type: riser, at: 12, bars: 4, gain: -3}
+
+  - name: build
+    bars: 16
+    tracks:
+      kick: kick_four
+      ohat: ohat_off
+      hat: {pattern: hat_8, gain: -4}
+      bass: {pattern: bass_build, cutoff: [0.45, 1.0]}
+      arp: {pattern: arp_16, cutoff: [0.35, 0.9]}
+      pad: {pattern: pad_bar, cutoff: [0.6, 0.85]}
+    tail:
+      bars: 4
+      tracks:
+        snare: snare_roll4
+    fx:
+      - {type: crash, at: 0}
+      - {type: riser, at: 8, bars: 8}
+
+  - name: drop1
+    bars: 24
+    tracks:
+      kick: [kick_four, kick_four, kick_four, kick_push]
+      snare: [snare_back, snare_back, snare_back, snare_fill]
+      hat: hat_drop
+      ohat: ohat_off
+      bass: bass_drive
+      arp: arp_16
+      pad: pad_bar
+      lead: lead_a
+    fx:
+      - {type: impact, at: 0, gain: -2}
+      - {type: crash, at: 0}
+      - {type: crash, at: 8, gain: -4}
+      - {type: crash, at: 16, gain: -4}
+      - {type: downlifter, at: 22, bars: 2, gain: -4}
+
+  - name: break
+    bars: 16
+    tracks:
+      pad: {pattern: pad_bar, cutoff: [0.9, 0.5]}
+      arp: {pattern: arp_8, cutoff: [0.5, 0.3]}
+      bass: {pattern: bass_hold, cutoff: [0.6, 0.4], gain: -4}
+    tail:
+      bars: 4
+      tracks:
+        kick: kick_four
+        snare: snare_roll4
+        arp: {pattern: arp_16, cutoff: [0.3, 1.0]}
+        bass: {pattern: bass_build, cutoff: [0.4, 1.0]}
+    fx:
+      - {type: impact, at: 0, gain: -4}
+      - {type: riser, at: 12, bars: 4}
+
+  - name: drop2
+    bars: 32
+    tracks:
+      kick: [kick_four, kick_four, kick_four, kick_push]
+      snare: [snare_back, snare_back, snare_back, snare_fill]
+      hat: hat_drop
+      ohat: ohat_off
+      bass: bass_drive
+      arp: arp_16
+      pad: pad_bar
+      lead: [lead_a, lead_b]
+      lead2: {pattern: [lead_a, lead_b], transpose: -12}
+    fx:
+      - {type: impact, at: 0}
+      - {type: crash, at: 0}
+      - {type: crash, at: 8, gain: -4}
+      - {type: crash, at: 16, gain: -2}
+      - {type: crash, at: 24, gain: -4}
+
+  - name: outro
+    bars: 8
+    tracks:
+      pad: {pattern: pad_bar, cutoff: [0.7, 0.25]}
+      arp: {pattern: arp_8, cutoff: [0.45, 0.2]}
+      kick: {pattern: kick_four, gain: -3}
+      bass: {pattern: bass_hold, cutoff: [0.5, 0.3], gain: -4}
+    tail:
+      bars: 4
+      tracks:
+        kick: null
+    fx:
+      - {type: crash, at: 0}
+
+# gain i dB, pan -1..1, sändningar 0..1, duck = sidechain-djup från kicken
+mix:
+  kick:  {gain: -5}
+  snare: {gain: -5, reverb: 0.35}
+  hat:   {gain: -12, pan: 0.2, reverb: 0.05}
+  ohat:  {gain: -17, pan: -0.2, reverb: 0.08}
+  bass:  {gain: -6, duck: 0.65}
+  arp:   {gain: -12, duck: 0.5, delay: 0.35, reverb: 0.15}
+  pad:   {gain: -12, duck: 0.7, reverb: 0.35, highpass: 180}
+  lead:  {gain: -8, duck: 0.3, delay: 0.25, reverb: 0.3, highpass: 200}
+  lead2: {gain: -14, duck: 0.3, reverb: 0.25, highpass: 150}
+  fx:    {gain: -12, reverb: 0.4}
+  voice: {gain: 0, delay: 0.18, reverb: 0.22, highpass: 120}
+
+fx_buses:
+  delay: {steps: 3, feedback: 0.42, damp: 0.3, return: -4, reverb: 0.3}
+  reverb: {seconds: 2.6, damping: 5500, return: -6}
+
+master:
+  glue_threshold: -14
+  target_rms_db: -10.5
+  ceiling_db: -1.0

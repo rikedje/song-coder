@@ -1,0 +1,26 @@
+# Robotisk prattext. section + bar = var repliken börjar (takt räknad från sektionens start).
+voice: en_US-ryan-high
+length_scale: 1.08
+# Vocoderns bärvåg: grundtonen F i två oktaver plus kvinten ger en monoton maskinröst
+carrier: [F2, C3, F3]
+vocoder_mix: 0.7
+
+lines:
+  - section: intro
+    bar: 2
+    text: "Midnight. Sector nine. The streets are burning neon."
+  - section: intro
+    bar: 8
+    text: "Engine primed. Target acquired. Do not look back."
+  - section: break
+    bar: 1
+    text: "They are closing in. Three cars. No lights."
+  - section: break
+    bar: 6
+    text: "Chrome on chrome, at two hundred kilometers per hour."
+  - section: break
+    bar: 10
+    text: "Hold the line. The city is ours until dawn."
+  - section: outro
+    bar: 1
+    text: "Midnight engine. Offline."

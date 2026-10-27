@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+# Piper voice models (~120 MB) – downloaded by setup
+voices/
+# Large render artifacts; mp3 is kept
+songs/*/out/*.wav
+songs/*/build/
