@@ -150,12 +150,34 @@ def bell(freq, n_gate, vel, p, cm, rng):
     return np.stack(out) * env * vel * 0.6
 
 
+def mono(freq, n_gate, vel, p, cm, rng):
+    """Vintage monosynth: one oscillator that restarts at phase 0, filter envelope, no unison."""
+    env = adsr(n_gate, p.get("attack", 0.002), p.get("decay", 0.15), p.get("sustain", 0.5),
+               p.get("release", 0.05))
+    n = env.shape[0]
+    t = np.arange(n) / SR
+    f = np.full(n, freq)
+    osc = p.get("osc", "pulse")
+    if osc == "saw":
+        x = osc_saw(f, 0.0)
+    elif osc == "sine":
+        x = osc_sine(f, 0.0)
+    else:
+        x = osc_pulse(f, 0.0, p.get("width", 0.5))
+    if osc != "sine":
+        cutoff = p.get("cutoff", 2000) * cm * (1 + p.get("env_amount", 3.0) * np.exp(-t / p.get("env_decay", 0.06)))
+        x = svf(x, cutoff, p.get("resonance", 1.2), 0)
+    y = x * env * vel
+    return np.stack([y, y])
+
+
 def lowpass_noise(n, rng):
     return svf(rng.standard_normal(n), np.full(n, 3000.0), 0.707, 0)
 
 
 INSTRUMENTS = {
     "piano": piano,
+    "mono": mono,
     "bell": bell,
     "distbass": distbass,
     "softbass": softbass,

@@ -94,5 +94,16 @@ def downlifter(p, rng, seconds):
     return x * (1 - t) ** 2 * 0.6
 
 
-DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat}
+def etom(p, rng):
+    """Electronic tom: sine with a fast pitch drop, a touch of noise, no drive."""
+    n = int(0.5 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get("pitch", 160.0)
+    freq = f0 * (1 + p.get("sweep", 1.0) * np.exp(-t / 0.04))
+    x = osc_sine(freq, 0.0) * np.exp(-t / p.get("decay", 0.18))
+    x += bandpass(rng.standard_normal(n), f0 * 4, 1.0) * np.exp(-t / 0.01) * 0.15
+    return np.stack([x, x])
+
+
+DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom}
 FX = {"crash": crash, "impact": impact, "riser": riser, "downlifter": downlifter}

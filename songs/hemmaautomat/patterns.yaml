@@ -1,0 +1,44 @@
+# Mönster, 16 steg per takt (sextondelar). Längre mönster spänner flera takter.
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. Eb4) = absolut ton, ! = betoning
+
+kick_electro: "x.....x.x......."
+snare_back:   "....x.......x..."
+hat_8:        "x.o.x.o.x.o.x.o."
+hat_16:       "xgogxgogxgogxgog"
+
+# Elektroniska tom-fills (sista takten före ny del) och frågor/svar i mitten
+tom_fill_hi: "........x.x.x..."
+tom_fill_lo: "..............xx"
+tom_call_hi: "..........................x.x..."
+tom_call_lo: "..............................x."
+
+# Oktavbas i åttondelar, som en sequencer som aldrig stannar
+bass_oct: "r! . r+ . r . r+ . r! . r+ . r . r+ ."
+bass_16:  "r! r r+ r r r r+ r r! r r+ r r r+ r r+"
+
+# Högre sequencer
+seq_a: "1 . 2 . 3 . 2 . 1+ . 3 . 2 . 3 ."
+seq_b: "1 2 3 2 1+ 3 2 3 1 2 3 2 1+ 2+ 3+ 2+"
+
+# Datorpip: korta sinustoner högt upp
+blips_a: "3++ . . . . . . . . . . . 1++ . . . . . . . . . 2++ . . . . . . . . ."
+blips_b: "3++ . . 1++ . . . . 2++ . . . . 3++ . ."
+
+strings_hold: "C - - - - - - - - - - - - - - -"
+
+rest8: "................................................................................................................................"
+
+# Hooken: monofon pulsvågsmelodi över Cm – Cm – Bb – Bb (åtta takter)
+hook_a: >-
+  G4! - - . G4 . Eb4 . F4 - - . G4 - . .
+  C5! - - - - - . . Bb4 - . . G4 - - .
+  F4! - - . F4 . D4 . Eb4 - - . F4 - . .
+  Bb4! - - - - - . . G4 - . . F4 - - .
+  G4! - - . G4 . Eb4 . F4 - - . G4 - . .
+  Eb5! - - - D5 - - - C5 - - - Bb4 - - -
+  F4! - - . F4 . D4 . Eb4 - - . F4 - . .
+  D5! - - - - - - - C5 - - - - - . .

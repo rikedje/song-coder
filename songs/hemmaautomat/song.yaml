@@ -1,0 +1,162 @@
+# Hemmaautomat – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, text i lyrics.yaml.
+title: Hemmaautomat
+bpm: 115
+key: C minor
+seed: 1978
+date: 2026-10-27
+genre: Electro
+cover: {style: circuit}
+tail_seconds: 3
+fade_out_bars: 8
+
+# Inga ackordbyten i onödan: verserna står still på Cm, bara hooken går till Bb och tillbaka.
+progression: [Cm]
+chords:
+  Cm: {root: C2,  notes: [C4, Eb4, G4]}
+  Bb: {root: Bb1, notes: [Bb3, D4, F4]}
+
+instruments:
+  kick:    {type: kick, pitch_hi: 140, pitch_lo: 52, decay: 0.16, drive: 1.0}
+  snare:   {type: snare, decay: 0.08, drive: 1.0}
+  hat:     {type: hat, decay: 0.018}
+  tom_hi:  {type: etom, pitch: 220, decay: 0.15}
+  tom_lo:  {type: etom, pitch: 130, decay: 0.2}
+  bass:    {type: mono, osc: pulse, width: 0.5, cutoff: 700, env_amount: 4.0, env_decay: 0.05, resonance: 1.6, decay: 0.12, sustain: 0.3, legato: 0.6}
+  seq:     {type: mono, osc: saw, cutoff: 1400, env_amount: 3.0, env_decay: 0.03, resonance: 2.2, decay: 0.08, sustain: 0.0, legato: 0.5}
+  blips:   {type: mono, osc: sine, decay: 0.06, sustain: 0.0, release: 0.03, legato: 0.3}
+  strings: {type: superpad, cutoff: 2400, voices: 3, spread: 7, attack: 0.5, release: 0.8, legato: 1.0}
+  lead:    {type: mono, osc: pulse, width: 0.25, cutoff: 2600, env_amount: 1.0, env_decay: 0.1, resonance: 1.0, decay: 0.3, sustain: 0.8, release: 0.08, legato: 0.9}
+  lead2:   {type: mono, osc: saw, cutoff: 1800, env_amount: 0.8, resonance: 0.9, decay: 0.3, sustain: 0.8, release: 0.08, legato: 0.9}
+
+# Takter: intro 16 (byggs lager för lager) · vers 8 · hook 8 · vers 8 · hook 8 ·
+#         mitt 16 · vers 8 · hook 8 · outro 8 = 88 (≈3:04)
+sections:
+  - name: intro_bas
+    bars: 4
+    tracks:
+      bass: {pattern: bass_oct, cutoff: [0.4, 0.8]}
+
+  - name: intro_puls
+    bars: 4
+    tracks:
+      bass: {pattern: bass_oct, cutoff: [0.8, 1.0]}
+      hat: hat_8
+      blips: {pattern: blips_a, gain: -3}
+
+  - name: intro_trummor
+    bars: 8
+    tracks:
+      bass: bass_oct
+      kick: kick_electro
+      snare: snare_back
+      hat: hat_16
+      seq: {pattern: seq_a, cutoff: [0.4, 1.0]}
+      blips: blips_a
+    tail:
+      bars: 1
+      tracks:
+        tom_hi: tom_fill_hi
+        tom_lo: tom_fill_lo
+
+  - name: vers1
+    bars: 8
+    tracks: &vers
+      bass: bass_oct
+      kick: kick_electro
+      snare: snare_back
+      hat: hat_16
+      strings: {pattern: strings_hold, gain: -4}
+
+  - name: hook1
+    bars: 8
+    progression: [Cm, Cm, Bb, Bb]
+    tracks: &hook
+      bass: bass_oct
+      kick: kick_electro
+      snare: snare_back
+      hat: hat_16
+      seq: seq_a
+      strings: strings_hold
+      lead: hook_a
+    tail:
+      bars: 1
+      tracks:
+        tom_hi: tom_fill_hi
+        tom_lo: tom_fill_lo
+
+  - name: vers2
+    bars: 8
+    tracks:
+      <<: *vers
+      blips: {pattern: blips_a, gain: -4}
+
+  - name: hook2
+    bars: 8
+    progression: [Cm, Cm, Bb, Bb]
+    tracks: *hook
+    tail:
+      bars: 1
+      tracks:
+        tom_hi: tom_fill_hi
+        tom_lo: tom_fill_lo
+
+  - name: mitt
+    bars: 16
+    progression: [Cm, Cm, Cm, Cm, Cm, Cm, Cm, Cm, Cm, Cm, Bb, Bb, Cm, Cm, Bb, Bb]
+    tracks:
+      bass: bass_16
+      kick: kick_electro
+      snare: snare_back
+      hat: hat_16
+      tom_hi: tom_call_hi
+      tom_lo: tom_call_lo
+      seq: {pattern: seq_b, cutoff: [0.5, 1.3]}
+      blips: blips_b
+      lead2: {pattern: [rest8, hook_a], transpose: -12}
+
+  - name: vers3
+    bars: 8
+    tracks:
+      <<: *vers
+      seq: {pattern: seq_a, gain: -6, cutoff: [0.5, 0.5]}
+
+  - name: hook3
+    bars: 8
+    progression: [Cm, Cm, Bb, Bb]
+    tracks:
+      <<: *hook
+      lead2: {pattern: hook_a, transpose: -12, gain: -3}
+
+  - name: outro
+    bars: 8
+    tracks:
+      bass: {pattern: bass_oct, cutoff: [1.0, 0.4]}
+      hat: hat_16
+      seq: {pattern: seq_a, cutoff: [1.0, 0.3]}
+      blips: blips_a
+
+# Torrt och nära: lite rum, ingen sidechain-pump.
+mix:
+  kick:    {gain: -3}
+  snare:   {gain: -5, reverb: 0.12}
+  hat:     {gain: -13, pan: 0.15}
+  tom_hi:  {gain: -9, pan: 0.35, reverb: 0.1}
+  tom_lo:  {gain: -8, pan: -0.35, reverb: 0.1}
+  bass:    {gain: -1}
+  seq:     {gain: -11, delay: 0.15, pan: -0.2}
+  blips:   {gain: -12, delay: 0.3, pan: 0.3}
+  strings: {gain: -15, reverb: 0.2, highpass: 200}
+  lead:    {gain: -6, delay: 0.12, reverb: 0.1}
+  lead2:   {gain: -11, pan: -0.15}
+  voice:   {gain: -2, reverb: 0.08, highpass: 100}
+
+fx_buses:
+  delay: {steps: 3, feedback: 0.3, damp: 0.35, return: -6, reverb: 0.1}
+  reverb: {seconds: 1.2, damping: 6000, return: -8}
+
+master:
+  glue_threshold: -16
+  target_rms_db: -11.0
+  ceiling_db: -1.0
+  saturation: 0

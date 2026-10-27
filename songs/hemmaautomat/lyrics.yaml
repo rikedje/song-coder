@@ -1,0 +1,27 @@
+# Vocoder-pratsång. section + bar = var repliken börjar (takt räknad från sektionens start).
+voice: en_US-ryan-high
+style: robot
+length_scale: 1.15
+# Monoton bärvåg på C: grundton, kvint och oktav, som en robot som inte ändrar tonhöjd
+carrier: [C2, G2, C3]
+vocoder_mix: 0.85
+
+lines:
+  - {section: vers1, bar: 0, text: "Good morning. The coffee is ready."}
+  - {section: vers1, bar: 2, text: "The blinds go up. The lights go on."}
+  - {section: vers1, bar: 4, text: "The fridge is talking to the stove."}
+  - {section: vers1, bar: 6, text: "Home automat."}
+
+  - {section: vers2, bar: 0, text: "The vacuum robot knows the way."}
+  - {section: vers2, bar: 2, text: "Under the sofa. Around the chair."}
+  - {section: vers2, bar: 4, text: "The thermostat has made a plan."}
+  - {section: vers2, bar: 6, text: "Home automat."}
+
+  - {section: mitt, bar: 2, text: "Updating firmware."}
+  - {section: mitt, bar: 6, text: "Please wait."}
+  - {section: mitt, bar: 12, text: "Update complete."}
+
+  - {section: vers3, bar: 0, text: "Nobody is home. Everything is on."}
+  - {section: vers3, bar: 2, text: "The lights go on. The lights go off."}
+  - {section: vers3, bar: 4, text: "The house is thinking by itself."}
+  - {section: vers3, bar: 6, text: "Home automat."}

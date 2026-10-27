@@ -23,14 +23,14 @@ Python is uv-managed **3.12**, pinned via `.python-version`, `requires-python` a
 
 Songs are **data-driven**. Each `songs/<slug>/` contains only YAML and docs, and the shared engine in `tools/songcoder/` interprets them:
 
-- `song.yaml`: title, bpm, key, `date`, `genre`, `cover` (`style`: `sunset` | `nightcity` | `dawnclock` | `nocturne`, optional `palette`/`subtitle`; long titles wrap), chords plus a `progression` (one chord per bar, cycled from each section's start), `instruments` (track name → `type` plus synth params), `sections` (bars, `tracks` → pattern spec, optional `tail` that overrides tracks for the last N bars, `fx` one-shots), `mix` (per-track gain/pan/sends/`duck`/`highpass`/`lowpass`), `fx_buses`, `master`.
+- `song.yaml`: title, bpm, key, `date`, `genre`, `cover` (`style`: `sunset` | `nightcity` | `dawnclock` | `nocturne` | `circuit`, optional `palette`/`subtitle`; long titles wrap), chords plus a `progression` (one chord per bar, cycled from each section's start), `instruments` (track name → `type` plus synth params), `sections` (bars, `tracks` → pattern spec, optional `tail` that overrides tracks for the last N bars, `fx` one-shots), `mix` (per-track gain/pan/sends/`duck`/`highpass`/`lowpass`), `fx_buses`, `master`.
 - `patterns.yaml`: 16 steps per bar; longer strings span several bars. The notation is documented at the top of the file (drums `x/o/g/.`; melodic tokens `r`, `1-3`, `C`, note names, `+`/`-` octaves, `-` hold, `!` accent).
 - `lyrics.yaml`: Piper voice name, `style` (`robot`: pitched vocoder with `carrier` notes; `whisper`: noise-carrier vocoder; `plain`), `lines` placed by section and bar (a line can override `style`), and optional `chops`: single words TTS'd separately and triggered from patterns as `@name` on a track whose instrument `type: chop` (vocoded to the bar's chord by `tune`; a chop rings until the next hit).
 
 Engine modules:
 - `dsp.py`: numba oscillators/SVF, delay, convolution reverb, compressor, limiter.
-- `instruments.py`: pitched voices registered in `INSTRUMENTS` (`distbass`, `softbass`, `pluck`, `epiano`, `piano`, `bell`, `superpad`, `superlead`).
-- `drums.py`: the `DRUMS` and `FX` one-shots.
+- `instruments.py`: pitched voices registered in `INSTRUMENTS` (`distbass`, `softbass`, `pluck`, `epiano`, `piano`, `bell`, `mono`, `superpad`, `superlead`).
+- `drums.py`: the `DRUMS` (`kick`, `snare`, `hat`, `ohat`, `etom`) and `FX` one-shots. Drum samples are cached per track, so two tracks of the same kind can have different params.
 - `voice.py`: Piper via subprocess, cached in `songs/<slug>/build/voice/`, plus the robot, whisper and plain processors and vocal chops.
 - `cover.py`: procedural 1500×1500 cover art using the committed font `fonts/SpaceGrotesk.ttf` (OFL). Pillow's default font lacks å/ä/ö.
 - `tags.py`: ID3v2.3 tags via mutagen (title, artist `song-coder`, date, genre, BPM, key, lyrics, embedded APIC cover).

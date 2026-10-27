@@ -176,7 +176,43 @@ def nocturne(cfg, rng):
     return img.filter(ImageFilter.GaussianBlur(1.5))
 
 
-STYLES = {"sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne}
+def circuit(cfg, rng):
+    """Circuit board: random right-angle traces with pads, and a house traced in light."""
+    p = {"board": ["#04140f", "#0a2a20"], "trace": "#1f6b52", "light": "#7dffcf", **cfg.get("palette", {})}
+    img = Image.fromarray(_vgradient([(0, p["board"][0]), (1, p["board"][1])]).astype(np.uint8))
+    d = ImageDraw.Draw(img)
+    tc = tuple(int(v) for v in _hex(p["trace"]))
+    grid = 50
+    for _ in range(120):
+        x, y = (int(v) for v in rng.integers(0, SIZE // grid, 2) * grid)
+        pts = [(x, y)]
+        for _ in range(int(rng.integers(2, 6))):
+            if rng.random() < 0.5:
+                x += int(rng.integers(-6, 7)) * grid
+            else:
+                y += int(rng.integers(-6, 7)) * grid
+            pts.append((x, y))
+        d.line(pts, fill=tc, width=5, joint="curve")
+        for px, py in (pts[0], pts[-1]):
+            d.ellipse([px - 11, py - 11, px + 11, py + 11], outline=tc, width=5)
+    # the house: walls, roof, door and a window, drawn as lit traces
+    layer = Image.new("RGB", (SIZE, SIZE))
+    dl = ImageDraw.Draw(layer)
+    lc = tuple(int(v) for v in _hex(p["light"]))
+    cx, base, w, h = SIZE // 2, int(SIZE * 0.86), 520, 380
+    wall = [(cx - w // 2, base), (cx - w // 2, base - h), (cx, base - h - 260),
+            (cx + w // 2, base - h), (cx + w // 2, base), (cx - w // 2, base)]
+    dl.line(wall, fill=lc, width=10, joint="curve")
+    dl.rectangle([cx - 60, base - 200, cx + 60, base], outline=lc, width=8)
+    dl.rectangle([cx + 120, base - 300, cx + 220, base - 200], outline=lc, width=8)
+    dl.rectangle([cx - 220, base - 300, cx - 120, base - 200], fill=lc)
+    for px, py in wall[:5]:
+        dl.ellipse([px - 18, py - 18, px + 18, py + 18], fill=lc)
+    return _glow(img, layer, 18, 0.9)
+
+
+STYLES = {"sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
+          "circuit": circuit}
 
 
 def _wrap(d, text, font, max_w):

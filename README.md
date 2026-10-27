@@ -60,6 +60,7 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 | [Sista tåget](songs/sista-taget/) | melankolisk elektronika, svenska viskningar | 105 BPM, D-moll |
 | [Klockan fem](songs/klockan-fem/) | euforisk pianohouse, hackad röst-hook | 140 BPM, F-dur |
 | [När jag ska somna vaknar jag](songs/nar-jag-ska-somna-vaknar-jag/) | ambient/drone, avlägsna viskningar | 80 BPM, D-dur |
+| [Hemmaautomat](songs/hemmaautomat/) | Kraftwerk-inspirerad electro, vocoderprat om ett smart hem | 115 BPM, C-moll |
 
 ## Ansvarsfriskrivning (läs det här)
 

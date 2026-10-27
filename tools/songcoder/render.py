@@ -170,10 +170,11 @@ class Song:
                             t_in_sec = (b0 + off) * self.bar + i * self.step
                             start = (sec_start * self.bar + t_in_sec) * SR
                             if kind in DRUMS:
-                                if kind not in drum_cache:
-                                    drum_cache[kind] = DRUMS[kind](cfg, self.rng)
+                                # cache per track: two tracks of one kind may differ in params
+                                if name not in drum_cache:
+                                    drum_cache[name] = DRUMS[kind](cfg, self.rng)
                                 v = VEL[tok] * gain
-                                self.place(name, drum_cache[kind] * v, start)
+                                self.place(name, drum_cache[name] * v, start)
                                 if kind == "kick":
                                     kicks.append(int(start))
                                 continue
