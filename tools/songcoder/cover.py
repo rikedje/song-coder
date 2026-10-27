@@ -354,7 +354,41 @@ def orbit(cfg, rng):
     return _glow(img, layer, 6, 0.7)
 
 
-STYLES = {"orbit": orbit, "gears": gears, "geometric": geometric, "hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
+def pixelcity(cfg, rng):
+    """A cheerful city drawn at 50x50 pixels with a limited palette, scaled up without smoothing."""
+    p = {"sky": ["#5c94fc", "#7ab8ff", "#fcbcb0"], "sun": "#fce0a8",
+         "buildings": ["#8c2c00", "#3cbcfc", "#a4e4fc", "#f878f8", "#00a800"], "windows": "#fcfc54",
+         "ground": "#00a800", **cfg.get("palette", {})}
+    W = 50
+    img = Image.new("RGB", (W, W))
+    d = ImageDraw.Draw(img)
+    bands = [tuple(int(v) for v in _hex(c)) for c in p["sky"]]
+    for y in range(W):
+        d.point([(x, y) for x in range(W)], fill=bands[min(len(bands) - 1, y * len(bands) // 34)])
+    sc = tuple(int(v) for v in _hex(p["sun"]))
+    d.ellipse([33, 13, 43, 23], fill=sc)
+    for _ in range(3):  # blocky clouds, kept right of the title area
+        cx, cy = int(rng.integers(27, 42)), int(rng.integers(2, 10))
+        d.rectangle([cx, cy, cx + 6, cy + 1], fill=(252, 252, 252))
+        d.rectangle([cx + 1, cy - 1, cx + 4, cy - 1], fill=(252, 252, 252))
+    wc = tuple(int(v) for v in _hex(p["windows"]))
+    x = 0
+    while x < W:
+        w, h = int(rng.integers(4, 8)), int(rng.integers(8, 22))
+        bc = tuple(int(v) for v in _hex(p["buildings"][int(rng.integers(0, len(p["buildings"])))]))
+        d.rectangle([x, 44 - h, x + w - 1, 43], fill=bc)
+        for wy in range(44 - h + 2, 42, 3):
+            for wx in range(x + 1, x + w - 1, 2):
+                if rng.random() < 0.6:
+                    d.point((wx, wy), fill=wc)
+        x += w
+    d.rectangle([0, 44, W, W], fill=tuple(int(v) for v in _hex(p["ground"])))
+    for gx in range(0, W, 4):
+        d.point((gx, 45), fill=(0, 104, 0))
+    return img.resize((SIZE, SIZE), Image.NEAREST)
+
+
+STYLES = {"pixelcity": pixelcity, "orbit": orbit, "gears": gears, "geometric": geometric, "hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
           "circuit": circuit}
 
 

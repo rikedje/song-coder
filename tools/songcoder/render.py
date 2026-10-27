@@ -214,6 +214,11 @@ class Song:
                             cm = c0 * (c1 / c0) ** frac
                             freqs, vel = resolve_token(tok, self.chord_at(section, bar_in_sec))
                             n_gate = int(length * self.step * cfg.get("legato", 0.88) * SR)
+                            if kind == "chiparp":
+                                note = INSTRUMENTS[kind]([f * transpose for f in freqs], n_gate,
+                                                         vel * gain * hv, cfg, cm, self.rng)
+                                self.place(name, note, start)
+                                continue
                             for f in freqs:
                                 note = INSTRUMENTS[kind](f * transpose, n_gate, vel * gain * hv, cfg, cm, self.rng)
                                 self.place(name, note, start)

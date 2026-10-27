@@ -177,8 +177,40 @@ def zap(p, rng):
     return np.stack([x, np.concatenate([np.zeros(400), x[:-400]])]) * 0.5
 
 
+def _chipnoise(n, rate, rng):
+    """Console-style noise: random +/-1 held for `rate`-Hz steps (no filtering)."""
+    hold = max(1, int(SR / rate))
+    steps = rng.choice([-1.0, 1.0], n // hold + 1)
+    return np.repeat(steps, hold)[:n]
+
+
+def chipkick(p, rng):
+    """Triangle pitch drop, the way 8-bit games fake a kick."""
+    n = int(0.15 * SR)
+    t = np.arange(n) / SR
+    f = 50 + 300 * np.exp(-t / 0.02)
+    ph = np.cumsum(f / SR) % 1.0
+    tri = np.round((1 - 4 * np.abs(ph - 0.5) + 1) * 7.5) / 7.5 - 1
+    x = tri * np.exp(-t / p.get("decay", 0.06))
+    return np.stack([x, x])
+
+
+def chipsnare(p, rng):
+    n = int(0.2 * SR)
+    t = np.arange(n) / SR
+    x = _chipnoise(n, p.get("rate", 9000), rng) * np.exp(-t / p.get("decay", 0.06))
+    return np.stack([x, x]) * 0.7
+
+
+def chiphat(p, rng):
+    n = int(0.06 * SR)
+    t = np.arange(n) / SR
+    x = _chipnoise(n, p.get("rate", 22000), rng) * np.exp(-t / p.get("decay", 0.015))
+    return np.stack([x, x]) * 0.5
+
+
 DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom, "metal": metal,
-         "timpani": timpani}
+         "timpani": timpani, "chipkick": chipkick, "chipsnare": chipsnare, "chiphat": chiphat}
 FX = {"crash": crash, "impact": impact, "riser": riser, "downlifter": downlifter,
       "rain": rain, "vinyl": vinyl, "zap": zap}
 LONG_FX = {"riser", "downlifter", "rain", "vinyl"}  # take a length in bars

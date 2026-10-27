@@ -66,6 +66,7 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 | [Nya tider](songs/nya-tider/) | instrumental syntpop à la tidig Depeche Mode, en ringsignal som aldrig besvaras | 118 BPM, A-moll |
 | [Maskinkropp](songs/maskinkropp/) | EBM med tunga sequencerbasar och hårda tyska kommandon | 125 BPM, E-moll |
 | [Ingen syrebrist](songs/ingen-syrebrist/) | instrumental rymdelektronika med stråkmaskin och pukor à la Jarre/Schulze | 118 BPM, A-moll |
+| [Pixelstad](songs/pixelstad/) | glad 8-bit-chiptune med arkadutrop och tonartsbyte | 125 BPM, C-dur → D-dur |
 
 ## Ansvarsfriskrivning (läs det här)
 

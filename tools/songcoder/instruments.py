@@ -157,14 +157,20 @@ def mono(freq, n_gate, vel, p, cm, rng):
     n = env.shape[0]
     t = np.arange(n) / SR
     f = np.full(n, freq)
+    if p.get("vibrato"):
+        # cents depth, after a short delay, like a game sound driver
+        ramp = np.clip((t - p.get("vibrato_delay", 0.15)) / 0.1, 0, 1)
+        f = f * _cents(p["vibrato"] * ramp * np.sin(2 * np.pi * p.get("vibrato_hz", 6.0) * t))
     osc = p.get("osc", "pulse")
     if osc == "saw":
         x = osc_saw(f, 0.0)
     elif osc == "sine":
         x = osc_sine(f, 0.0)
+    elif osc == "tri4":
+        x = _tri4(f)
     else:
         x = osc_pulse(f, 0.0, p.get("width", 0.5))
-    if osc != "sine":
+    if osc not in ("sine", "tri4") and p.get("filter", True):
         cutoff = p.get("cutoff", 2000) * cm * (1 + p.get("env_amount", 3.0) * np.exp(-t / p.get("env_decay", 0.06)))
         x = svf(x, cutoff, p.get("resonance", 1.2), 0)
     y = x * env * vel
@@ -182,6 +188,25 @@ def strings(freq, n_gate, vel, p, cm, rng):
     return ensemble(x * env * vel * 0.5, p.get("depth", 0.0012), p.get("rate", 0.6))
 
 
+def _tri4(f):
+    """4-bit stepped triangle, as in old console sound chips (16 levels, no filtering)."""
+    ph = np.cumsum(f / SR) % 1.0
+    tri = 1 - 4 * np.abs(ph - 0.5)
+    return np.round((tri + 1) * 7.5) / 7.5 - 1
+
+
+def chiparp(freqs, n_gate, vel, p, cm, rng):
+    """Chip-style chord: one pulse voice cycling through the chord notes at frame rate."""
+    env = adsr(n_gate, 0.001, p.get("decay", 0.3), p.get("sustain", 0.6), p.get("release", 0.02))
+    n = env.shape[0]
+    frame = int(SR / p.get("rate", 50.0))
+    idx = (np.arange(n) // frame) % len(freqs)
+    f = np.asarray(freqs)[idx]
+    x = osc_pulse(f, 0.0, p.get("width", 0.25))
+    y = x * env * vel
+    return np.stack([y, y])
+
+
 def lowpass_noise(n, rng):
     return svf(rng.standard_normal(n), np.full(n, 3000.0), 0.707, 0)
 
@@ -189,6 +214,7 @@ def lowpass_noise(n, rng):
 INSTRUMENTS = {
     "piano": piano,
     "mono": mono,
+    "chiparp": chiparp,
     "strings": strings,
     "bell": bell,
     "distbass": distbass,

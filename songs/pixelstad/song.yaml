@@ -1,0 +1,126 @@
+# Pixelstad – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, arkadutropen i lyrics.yaml.
+title: Pixelstad
+bpm: 125
+key: C major
+seed: 1985
+date: 2026-10-27
+genre: Chiptune
+cover: {style: pixelcity}
+tail_seconds: 1
+fade_out_bars: 0
+
+# Glad I – V – vi – IV i C. Breaket går F – G – Em – Am.
+# Efter "Level up!" byter andra droppen tonart upp till D (klassiskt spelgrepp).
+progression: [C, G, Am, F]
+chords:
+  C:  {root: C2,  notes: [C4, E4, G4]}
+  G:  {root: G1,  notes: [B3, D4, G4]}
+  Am: {root: A1,  notes: [C4, E4, A4]}
+  F:  {root: F1,  notes: [C4, F4, A4]}
+  Em: {root: E2,  notes: [B3, E4, G4]}
+  D:  {root: D2,  notes: [D4, F#4, A4]}
+  A:  {root: A1,  notes: [C#4, E4, A4]}
+  Bm: {root: B1,  notes: [D4, F#4, B4]}
+
+# Bara det en gammal ljudkrets klarar: två pulsvågor, en 4-bitars triangel och brus.
+instruments:
+  lead:  {type: mono, osc: pulse, width: 0.5, filter: false, decay: 0.2, sustain: 0.7, release: 0.02, legato: 0.9, vibrato: 18, vibrato_hz: 6.0, vibrato_delay: 0.18}
+  lead2: {type: mono, osc: pulse, width: 0.125, filter: false, decay: 0.2, sustain: 0.6, release: 0.02, legato: 0.85}
+  arp:   {type: chiparp, width: 0.25, rate: 50, decay: 0.25, sustain: 0.5, legato: 0.95}
+  bass:  {type: mono, osc: tri4, decay: 0.2, sustain: 0.9, release: 0.01, legato: 0.85}
+  kick:  {type: chipkick, decay: 0.06}
+  snare: {type: chipsnare, rate: 9000, decay: 0.06}
+  hat:   {type: chiphat, rate: 22000, decay: 0.012}
+
+# Takter: intro 8 · build 16 · drop1 24 · break 16 · drop2 24 · outro 8 = 96 (≈3:05)
+sections:
+  - name: intro
+    bars: 8
+    tracks:
+      arp: {pattern: arp_half, gain: -3}
+
+  - name: build
+    bars: 16
+    tracks:
+      arp: arp_half
+      bass: bass_oct
+      kick: kick_half
+      hat: hat_8
+    tail:
+      bars: 2
+      tracks:
+        lead: climb
+        snare: snare_roll2
+        kick: kick_four
+
+  - name: drop1
+    bars: 24
+    tracks:
+      arp: arp_beat
+      bass: bass_oct
+      kick: kick_four
+      snare: snare_back
+      hat: hat_16
+      lead: [lead_a, lead_a2]
+
+  - name: break
+    bars: 16
+    progression: [F, G, Em, Am]
+    tracks:
+      arp: arp_half
+      bass: {pattern: bass_long, gain: -5}
+      lead: {pattern: lead_break, gain: -6}
+    tail:
+      bars: 2
+      tracks:
+        lead2: climb
+        snare: snare_roll2
+
+  - name: drop2
+    bars: 24
+    progression: [D, A, Bm, G]
+    tracks:
+      arp: arp_beat
+      bass: bass_oct
+      kick: kick_four
+      snare: snare_back
+      hat: hat_16
+      lead: {pattern: [lead_a, lead_a2], transpose: 2}
+      lead2: {pattern: [lead_a, lead_a2], transpose: -10}
+
+  - name: outro
+    bars: 8
+    progression: [D, A, Bm, G]
+    tracks:
+      arp: arp_half
+      bass: bass_long
+      hat: hat_8
+    tail:
+      bars: 2
+      tracks:
+        lead: ending
+        arp: null
+        bass: null
+        hat: null
+
+# Inget rum alls: inga reverb- eller delaysändningar.
+mix:
+  lead:  {gain: -4, pan: 0.05}
+  lead2: {gain: -10, pan: -0.25}
+  arp:   {gain: -11, pan: 0.25}
+  bass:  {gain: -9}
+  kick:  {gain: -4}
+  snare: {gain: -6}
+  hat:   {gain: -10}
+  voice: {gain: -1, highpass: 300, lowpass: 4500, downsample: 4, crush: 5}
+
+fx_buses:
+  delay: {steps: 3, feedback: 0.0, damp: 0.5, return: -60, reverb: 0.0}
+  reverb: {seconds: 0.5, damping: 6000, return: -60}
+
+master:
+  glue_threshold: -14
+  target_rms_db: -11.0
+  ceiling_db: -1.0
+  saturation: 0

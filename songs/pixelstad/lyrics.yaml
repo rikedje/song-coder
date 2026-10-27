@@ -1,0 +1,17 @@
+# Arkadutrop. Mixen krossar rösten till 8-bit (sänkt samplingsfrekvens, 5 bitar, bandpass).
+voice: en_US-ryan-high
+style: plain
+length_scale: 0.9
+
+lines:
+  - {section: intro, bar: 1, text: "Insert coin."}
+  - {section: intro, bar: 5, text: "Ready?"}
+  - {section: build, bar: 0, text: "Welcome to Pixel City!"}
+  - {section: build, bar: 14, text: "Go!"}
+  - {section: drop1, bar: 8, text: "Bonus!"}
+  - {section: drop1, bar: 16, text: "Extra life!"}
+  - {section: break, bar: 1, text: "Bonus stage!"}
+  - {section: break, bar: 14, text: "Level up!"}
+  - {section: drop2, bar: 12, text: "High score!"}
+  - {section: outro, bar: 2, text: "Game over?"}
+  - {section: outro, bar: 5, text: "Continue?"}

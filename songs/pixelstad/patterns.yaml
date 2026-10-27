@@ -1,0 +1,50 @@
+# Mönster, 16 steg per takt (sextondelar vid 125 BPM).
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus  (mellanslag grupperar bara)
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, + / - = oktav upp/ned
+#           C = hela ackordet (spelas som snabbt arpeggio av chiparp), notnamn = absolut ton
+
+kick_half:   "x.......x......."
+kick_four:   "x...x...x...x..."
+snare_back:  "....x.......x..."
+snare_roll2: "o.o.o.o.o.o.o.o.xxxxxxxxxxxxxxxx"
+hat_8:       "x.o.x.o.x.o.x.o."
+hat_16:      "xoxoxoxoxoxoxoxo"
+
+# Triangelbas som studsar i oktaver
+bass_oct:  "r . r+ . r . r+ . r . r+ . r . r+ ."
+bass_long: "r - - - - - - - r - - - - - - -"
+
+# Ackord som blixtsnabba arpeggion
+arp_half: "C - - - - - - - C - - - - - - -"
+arp_beat: "C - - . C - . C - - C - . C - ."
+
+# Klättring uppåt in i droppen (två takter)
+climb: >-
+  C4 E4 G4 C5 D4 F4 A4 D5 E4 G4 B4 E5 F4 A4 C5 F5
+  G4 B4 D5 G5 A4 C5 E5 A5 B4 D5 F5 B5 C5 E5 G5 C6
+
+# Huvudmelodin över C – G – Am – F
+lead_a: >-
+  E5 . G5 . C6 - - . B5 . A5 . G5 - E5 .
+  D5 - - . D5 . G5 . B5 - - . A5 . G5 .
+  C6 - - . B5 . A5 . E5 - - . A5 . B5 .
+  C6 - - - A5 - - - F5 - - . G5 . A5 .
+lead_a2: >-
+  E5 . G5 . C6 - - . B5 . A5 . G5 - E5 .
+  D5 - - . D5 . G5 . B5 - - . A5 . G5 .
+  C6 - - . B5 . A5 . E5 - - . A5 . B5 .
+  C6 - - - - - - - . . . . . . . .
+
+# Lugnare melodi i breaket över F – G – Em – Am
+lead_break: >-
+  A5 - - - - - - - C6 - - - - - - -
+  B5 - - - - - - - G5 - - - - - - -
+  G5 - - - - - - - E5 - - - - - - -
+  A5 - - - - - - - - - - - . . . .
+
+# Slutsignal, som när spelet tar slut (i D)
+ending: >-
+  D5 . F#5 . A5 . D6 - - - - - . . . .
+  A5 - - - D6 - - - - - - - - - . .
