@@ -155,7 +155,30 @@ def metal(p, rng):
     return np.stack([x, x]) * 0.5
 
 
-DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom, "metal": metal}
+def timpani(p, rng):
+    """Tuned kettle drum: membrane modes (1, 1.5, 1.98, 2.44) with a slight pitch settle and a felt mallet."""
+    n = int(2.5 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get("pitch", 55.0)
+    glide = 1 + 0.03 * np.exp(-t / 0.05)
+    x = np.zeros(n)
+    for ratio, amp, tau in ((1.0, 1.0, 1.1), (1.5, 0.5, 0.6), (1.98, 0.3, 0.4), (2.44, 0.15, 0.25)):
+        x += amp * osc_sine(f0 * ratio * glide, 0.0) * np.exp(-t / (tau * p.get("decay", 1.0)))
+    x += lowpass(rng.standard_normal(n), 700) * np.exp(-t / 0.015) * 0.6
+    return np.stack([x, x]) * 0.6
+
+
+def zap(p, rng):
+    """Space-age zap: a resonant sine falling fast in pitch."""
+    n = int(0.5 * SR)
+    t = np.arange(n) / SR
+    f = 200 + 3200 * np.exp(-t / 0.07)
+    x = osc_sine(f, 0.0) * np.exp(-t / 0.15)
+    return np.stack([x, np.concatenate([np.zeros(400), x[:-400]])]) * 0.5
+
+
+DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom, "metal": metal,
+         "timpani": timpani}
 FX = {"crash": crash, "impact": impact, "riser": riser, "downlifter": downlifter,
-      "rain": rain, "vinyl": vinyl}
+      "rain": rain, "vinyl": vinyl, "zap": zap}
 LONG_FX = {"riser", "downlifter", "rain", "vinyl"}  # take a length in bars

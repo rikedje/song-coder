@@ -65,6 +65,7 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 | [Ljusfart](songs/ljusfart/) | liquid drum & bass, MC-utrop om en satellitsignal | 172 BPM, F#-moll |
 | [Nya tider](songs/nya-tider/) | instrumental syntpop à la tidig Depeche Mode, en ringsignal som aldrig besvaras | 118 BPM, A-moll |
 | [Maskinkropp](songs/maskinkropp/) | EBM med tunga sequencerbasar och hårda tyska kommandon | 125 BPM, E-moll |
+| [Ingen syrebrist](songs/ingen-syrebrist/) | instrumental rymdelektronika med stråkmaskin och pukor à la Jarre/Schulze | 118 BPM, A-moll |
 
 ## Ansvarsfriskrivning (läs det här)
 

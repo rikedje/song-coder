@@ -322,7 +322,39 @@ def gears(cfg, rng):
     return img
 
 
-STYLES = {"gears": gears, "geometric": geometric, "hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
+def orbit(cfg, rng):
+    """A half-lit planet with thin orbit ellipses, a small moon and a starfield."""
+    p = {"space": ["#01020a", "#0b1636"], "planet": ["#2f8fd6", "#0b2a52"], "line": "#9fd2ff",
+         "moon": "#f2efe6", **cfg.get("palette", {})}
+    yy, xx = np.mgrid[0:SIZE, 0:SIZE]
+    base = _vgradient([(0, p["space"][0]), (1, p["space"][1])])
+    _stars(base, rng, 600, SIZE)
+    cx, cy, r = 760, 980, 430
+    dx, dy = (xx - cx) / r, (yy - cy) / r
+    inside = dx ** 2 + dy ** 2 < 1
+    dz = np.sqrt(np.clip(1 - dx ** 2 - dy ** 2, 0, 1))
+    light = np.clip(-0.6 * dx - 0.5 * dy + 0.62 * dz, 0, 1)[..., None]
+    col = _hex(p["planet"][1]) * (1 - light) + _hex(p["planet"][0]) * light
+    rim = np.exp(-np.abs(np.sqrt(dx ** 2 + dy ** 2) - 1) * 40)[..., None] * _hex(p["line"]) * 0.6
+    a = np.where(inside[..., None], col, base) + rim
+    img = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+    lc = tuple(int(v * 0.8) for v in _hex(p["line"]))
+    lines = np.zeros((SIZE, SIZE, 3))
+    for k, (rx, ry) in enumerate(((620, 170), (780, 230), (960, 300))):
+        ey = cy - 80 * k
+        one = Image.new("RGB", (SIZE, SIZE))
+        ImageDraw.Draw(one).ellipse([cx - rx, ey - ry, cx + rx, ey + ry], outline=lc, width=3)
+        a1 = np.asarray(one, dtype=float).copy()
+        a1[inside & (yy < ey)] = 0  # the far half of the orbit passes behind the planet
+        lines = np.maximum(lines, a1)
+    layer = Image.fromarray(lines.astype(np.uint8))
+    d = ImageDraw.Draw(layer)
+    mc = tuple(int(v) for v in _hex(p["moon"]))
+    d.ellipse([cx + 540, cy - 460, cx + 600, cy - 400], fill=mc)
+    return _glow(img, layer, 6, 0.7)
+
+
+STYLES = {"orbit": orbit, "gears": gears, "geometric": geometric, "hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
           "circuit": circuit}
 
 

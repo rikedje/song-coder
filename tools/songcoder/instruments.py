@@ -1,7 +1,7 @@
 """Pitched synth voices. Each render function returns a stereo (2, n) note."""
 import numpy as np
 
-from .dsp import SR, adsr, osc_pulse, osc_saw, osc_sine, soft_clip, svf
+from .dsp import SR, adsr, ensemble, osc_pulse, osc_saw, osc_sine, soft_clip, svf
 
 
 def _cents(c):
@@ -171,6 +171,17 @@ def mono(freq, n_gate, vel, p, cm, rng):
     return np.stack([y, y])
 
 
+def strings(freq, n_gate, vel, p, cm, rng):
+    """Vintage string machine: divide-down saw at 8' and 4', slow envelope, ensemble chorus."""
+    env = adsr(n_gate, p.get("attack", 0.35), 1.0, 0.95, p.get("release", 1.0))
+    n = env.shape[0]
+    f = np.full(n, freq)
+    x = osc_saw(f, 0.0) + p.get("octave", 0.5) * osc_saw(f * 2, 0.0)
+    x = svf(x, np.full(n, p.get("cutoff", 3000) * cm), 0.8, 0)
+    x = svf(x, np.full(n, 180.0), 0.7, 2)
+    return ensemble(x * env * vel * 0.5, p.get("depth", 0.0012), p.get("rate", 0.6))
+
+
 def lowpass_noise(n, rng):
     return svf(rng.standard_normal(n), np.full(n, 3000.0), 0.707, 0)
 
@@ -178,6 +189,7 @@ def lowpass_noise(n, rng):
 INSTRUMENTS = {
     "piano": piano,
     "mono": mono,
+    "strings": strings,
     "bell": bell,
     "distbass": distbass,
     "softbass": softbass,

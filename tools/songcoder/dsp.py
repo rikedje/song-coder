@@ -204,6 +204,19 @@ def tape(x, wow, wow_hz, flutter, flutter_hz):
     return _vardelay(x, d * SR + 2)
 
 
+def ensemble(x, depth=0.0012, rate=0.6, vib=0.00015, vib_rate=5.5):
+    """String-machine ensemble: three modulated delay taps 120 degrees apart, spread to stereo."""
+    n = x.shape[0]
+    t = np.arange(n) / SR
+    src = np.stack([x, x])
+    taps = []
+    for k in range(3):
+        ph = 2 * np.pi * k / 3
+        d = 0.006 + depth * (1 + np.sin(2 * np.pi * rate * t + ph)) + vib * np.sin(2 * np.pi * vib_rate * t + ph)
+        taps.append(_vardelay(src, d * SR)[0])
+    return np.stack([taps[0] + 0.6 * taps[1], taps[2] + 0.6 * taps[1]]) / 1.6
+
+
 def soft_clip(x, drive):
     return np.tanh(drive * x) / np.tanh(drive)
 
