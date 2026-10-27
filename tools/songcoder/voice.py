@@ -88,6 +88,18 @@ def plain(x):
     return np.stack([0.9 * y + 0.1 * right, 0.9 * right + 0.1 * y])
 
 
+def shout(x, drive=4.0, slap=0.09):
+    """Hard commanding voice: levelled, overdriven, band-limited, with a slapback echo."""
+    y = sos_filter(x, "bandpass", [180, 5500])
+    y = y / (np.max(np.abs(y)) + 1e-9)
+    y = np.tanh(drive * y) / np.tanh(drive)
+    d = int(slap * SR)
+    echo = np.concatenate([np.zeros(d), y])[: y.shape[0]] * 0.35
+    left = y + echo
+    right = y + np.concatenate([np.zeros(int(d * 1.3)), y])[: y.shape[0]] * 0.3
+    return np.stack([left, right]) * 0.5
+
+
 def _trim(x, floor_db=-38.0):
     env = np.abs(x)
     keep = np.nonzero(env > env.max() * 10 ** (floor_db / 20))[0]

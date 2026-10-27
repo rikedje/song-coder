@@ -63,6 +63,8 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 | [Hemmaautomat](songs/hemmaautomat/) | Kraftwerk-inspirerad electro, vocoderprat om ett smart hem | 115 BPM, C-moll |
 | [Regnig söndag](songs/regnig-sondag/) | lo-fi hiphop i halvtid, regn, vinyl och filmrepliker | 128 BPM, F-dur |
 | [Ljusfart](songs/ljusfart/) | liquid drum & bass, MC-utrop om en satellitsignal | 172 BPM, F#-moll |
+| [Nya tider](songs/nya-tider/) | instrumental syntpop à la tidig Depeche Mode, en ringsignal som aldrig besvaras | 118 BPM, A-moll |
+| [Maskinkropp](songs/maskinkropp/) | EBM med tunga sequencerbasar och hårda tyska kommandon | 125 BPM, E-moll |
 
 ## Ansvarsfriskrivning (läs det här)
 

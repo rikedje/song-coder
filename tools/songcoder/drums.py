@@ -143,7 +143,19 @@ def vinyl(p, rng, seconds):
     return _fade(x, 1.0)
 
 
-DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom}
+def metal(p, rng):
+    """Metallic clank, like a sampled anvil or pipe: inharmonic partials with fast decays."""
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    f0 = p.get("pitch", 420.0)
+    x = np.zeros(n)
+    for ratio, amp, tau in ((1.0, 1.0, 0.12), (2.76, 0.7, 0.07), (5.40, 0.5, 0.04), (8.93, 0.35, 0.025)):
+        x += amp * np.sin(2 * np.pi * f0 * ratio * t) * np.exp(-t / (tau * p.get("decay", 1.0)))
+    x += highpass(rng.standard_normal(n), 2000) * np.exp(-t / 0.004) * 0.6
+    return np.stack([x, x]) * 0.5
+
+
+DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom, "metal": metal}
 FX = {"crash": crash, "impact": impact, "riser": riser, "downlifter": downlifter,
       "rain": rain, "vinyl": vinyl}
 LONG_FX = {"riser", "downlifter", "rain", "vinyl"}  # take a length in bars

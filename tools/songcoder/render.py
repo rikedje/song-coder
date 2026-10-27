@@ -14,7 +14,7 @@ from .drums import DRUMS, FX, LONG_FX
 from .dsp import SR, db
 from .instruments import INSTRUMENTS
 from .tags import write_tags
-from .voice import chop_note, load_chops, plain, robotize, tts, whisper
+from .voice import chop_note, load_chops, plain, robotize, shout, tts, whisper
 
 VEL = {"x": 1.0, "o": 0.6, "g": 0.35}
 NOTE_RE = re.compile(r"^([A-G])(#|b)?(-?\d)$")
@@ -246,6 +246,8 @@ class Song:
                 y = whisper(x, self.rng, cfg.get("air", 0.12))
             elif style == "plain":
                 y = plain(x)
+            elif style == "shout":
+                y = shout(x, cfg.get("drive", 4.0), cfg.get("slap", 0.09))
             else:
                 y = robotize(x, carrier, self.rng, cfg.get("vocoder_mix", 0.7))
             bar = sec_by_name[line["section"]] + line.get("bar", 0)

@@ -270,7 +270,59 @@ def hyperspace(cfg, rng):
     return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
 
-STYLES = {"hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
+def geometric(cfg, rng):
+    """Early-80s print look: flat colour blocks, bars and circles, and a coiled phone cord."""
+    p = {"paper": "#efe8d8", "colors": ["#c8102e", "#141414", "#1d6e7a", "#e8b100"], **cfg.get("palette", {})}
+    img = Image.new("RGB", (SIZE, SIZE), tuple(int(v) for v in _hex(p["paper"])))
+    d = ImageDraw.Draw(img)
+    cols = [tuple(int(v) for v in _hex(c)) for c in p["colors"]]
+    d.rectangle([0, int(SIZE * 0.62), SIZE, SIZE], fill=cols[1])
+    d.ellipse([820, 430, 1340, 950], fill=cols[0])
+    for k in range(6):
+        y = 470 + k * 70
+        d.rectangle([120, y, 700 - k * 60, y + 34], fill=cols[2] if k % 2 else cols[1])
+    d.polygon([(1100, 1500), (1500, 1100), (1500, 1500)], fill=cols[3])
+    # coiled telephone cord running across the dark band
+    t = np.linspace(0, 1, 2000)
+    xs = 80 + t * 1340 + 26 * np.cos(t * 2 * np.pi * 28)
+    ys = SIZE * 0.78 + 60 * np.sin(t * 2 * np.pi * 1.2) + 26 * np.sin(t * 2 * np.pi * 28)
+    d.line(list(zip(xs, ys)), fill=tuple(int(v) for v in _hex(p["paper"])), width=7)
+    return img
+
+
+def _gear(d, cx, cy, r, teeth, fill, hole):
+    pts = []
+    for k in range(teeth * 4):
+        a = k / (teeth * 4) * 2 * np.pi
+        rr = r if (k // 2) % 2 == 0 else r * 0.82
+        pts.append((cx + rr * np.cos(a), cy + rr * np.sin(a)))
+    d.polygon(pts, fill=fill)
+    d.ellipse([cx - r * 0.3, cy - r * 0.3, cx + r * 0.3, cy + r * 0.3], fill=hole)
+
+
+def gears(cfg, rng):
+    """Interlocking gear silhouettes on a hard two-colour ground."""
+    p = {"ground": "#b3121b", "gear": "#0d0d0d", "accent": "#e9e4da", **cfg.get("palette", {})}
+    g = tuple(int(v) for v in _hex(p["ground"]))
+    img = Image.new("RGB", (SIZE, SIZE), g)
+    d = ImageDraw.Draw(img)
+    a = tuple(int(v) for v in _hex(p["accent"]))
+    for i in range(4):
+        d.rectangle([0, 360 + i * 44, SIZE, 368 + i * 44], fill=a)
+    # three gears placed so their teeth mesh instead of overlapping
+    k = tuple(int(v) for v in _hex(p["gear"]))
+    big, mid, small = (470, 1060, 390, 14), None, None
+    ang1, ang2 = np.radians(-40), np.radians(55)
+    d1 = (390 + 270) * 0.9
+    mid = (big[0] + d1 * np.cos(ang1), big[1] + d1 * np.sin(ang1), 270, 10)
+    d2 = (270 + 170) * 0.9
+    small = (mid[0] + d2 * np.cos(ang2), mid[1] + d2 * np.sin(ang2), 170, 7)
+    for cx, cy, r, teeth in (big, mid, small):
+        _gear(d, cx, cy, r, teeth, k, g)
+    return img
+
+
+STYLES = {"gears": gears, "geometric": geometric, "hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
           "circuit": circuit}
 
 
@@ -286,7 +338,7 @@ def _wrap(d, text, font, max_w):
     return lines + [cur]
 
 
-def _text(img, title, subtitle, color):
+def _text(img, title, subtitle, color, footer=None):
     d = ImageDraw.Draw(img)
     big = ImageFont.truetype(str(FONT), 124)
     big.set_variation_by_name("Bold")
@@ -294,16 +346,19 @@ def _text(img, title, subtitle, color):
     small.set_variation_by_name("Medium")
     lines = _wrap(d, title.upper(), big, SIZE - 180)
     items = [((90, 100 + 140 * k), line, big) for k, line in enumerate(lines)]
-    items += [((96, 250 + 140 * (len(lines) - 1)), subtitle, small), ((96, SIZE - 110), "song-coder", small)]
-    for xy, txt, font in items:
-        d.text((xy[0] + 3, xy[1] + 4), txt, font=font, fill=(0, 0, 0))
-        d.text(xy, txt, font=font, fill=color)
+    items = [(xy, txt, font, color) for xy, txt, font in items]
+    items += [((96, 250 + 140 * (len(lines) - 1)), subtitle, small, color),
+              ((96, SIZE - 110), "song-coder", small, footer or color)]
+    for xy, txt, font, col in items:
+        if _hex(col).mean() > 128:  # a drop shadow only helps light text
+            d.text((xy[0] + 3, xy[1] + 4), txt, font=font, fill=(0, 0, 0))
+        d.text(xy, txt, font=font, fill=col)
 
 
 def make_cover(song, rng, path):
     cfg = song.get("cover", {})
     img = STYLES[cfg.get("style", "nightcity")](cfg, rng)
     sub = cfg.get("subtitle", f"{song.get('genre', '')} · {song['bpm']} BPM · {song.get('key', '')}")
-    _text(img, song["title"], sub, cfg.get("text", "#f4f0ff"))
+    _text(img, song["title"], sub, cfg.get("text", "#f4f0ff"), cfg.get("footer"))
     img.save(path, "JPEG", quality=92)
     return path

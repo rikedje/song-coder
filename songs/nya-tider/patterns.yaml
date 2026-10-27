@@ -1,0 +1,63 @@
+# Mönster, 16 steg per takt (sextondelar vid 118 BPM).
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus  (mellanslag grupperar bara)
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. E6) = absolut ton, ! = betoning
+
+# Trummaskin
+kick_pop:   "x.....x.x......."
+kick_half:  "x.......x......."
+snare_pop:  "....x.......x..."
+snare_fill: "....x.......xoxx"
+hat_8:      "x.o.x.o.x.o.x.o."
+ohat_end:   "..............x."
+# Metalliska slag, två takter, hi och lo svarar varandra
+metal_hi: "......x...............x...x....."
+metal_lo: "..............x.............x..."
+
+# Studsande sequencerbas
+bass_8:      "r . r . r+ . r . r . r . r+ . r ."
+bass_chorus: "r r . r r+ . r . r r . r r+ . r ."
+
+arp_bounce: "1 2 3 2 1 2 3+ 2 1 2 3 2 1+ 3 2 3"
+
+stabs_verse:  "C . . . . . . . C . . . . . . ."
+stabs_chorus: "C . . C . . C . . . C . C . . ."
+strings_hold: "C - - - - - - - - - - - - - - -"
+
+# Telefonen: en ringsignal (snabb drill mellan två toner), sedan tystnad. Två takter.
+phone_ring: >-
+  E6 C6 E6 C6 E6 C6 E6 C6 E6 C6 E6 C6 . . . .
+  . . . . . . . . . . . . . . . .
+
+# Versmelodi över Am – F – C – G (tar sångens plats)
+verse_mel: >-
+  E4! - - - E4 - D4 - C4 - - - D4 - E4 -
+  F4 - - - - - E4 - C4 - - - . . . .
+  G4! - - - G4 - E4 - D4 - - - C4 - D4 -
+  D4 - - - - - - - . . . . . . . .
+verse_mel_b: >-
+  E4! - - - E4 - D4 - C4 - - - D4 - E4 -
+  F4 - - - - - E4 - C4 - - - . . . .
+  G4! - - - G4 - E4 - D4 - - - C4 - D4 -
+  B3 - - - D4 - - - G4 - - - - - . .
+
+# Refrängmelodi över F – G – C – Am
+chorus_mel: >-
+  A4! - - - C5 - - - A4 - G4 - F4 - - -
+  G4 - - - - - - - D4 - - - G4 - - -
+  E5! - - - D5 - - - C5 - - - G4 - - -
+  A4 - - - - - - - - - - - . . . .
+chorus_mel_b: >-
+  A4! - - - C5 - - - A4 - G4 - F4 - - -
+  G4 - - - - - - - D4 - - - G4 - - -
+  E5! - - - D5 - - - C5 - - - G4 - - -
+  A4 - - - B4 - C5 - E5 - - - - - . .
+
+# Stick över Dm – Em – F – G
+bridge_mel: >-
+  F4! - - - A4 - - - D5 - - - C5 - - -
+  B4 - - - - - - - G4 - - - E4 - - -
+  A4! - - - C5 - - - F5 - - - E5 - - -
+  D5 - - - - - - - B4 - - - G4 - - -

@@ -1,0 +1,19 @@
+# Mönster, 16 steg per takt (sextondelar vid 125 BPM).
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus  (mellanslag grupperar bara)
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, ! = betoning
+
+kick_four:   "x...x...x...x..."
+snare_back:  "....x.......x..."
+snare_roll4: "g...g...g...g... o.o.o.o.o.o.o.o. oooooooooooooooo xxxxxxxxxxxxxxxx"
+hat_16:      "gogogogogogogogo"
+ohat_off:    "..x...x...x...x."
+metal_a:     "......x.........  ......x...x....."
+
+# Sequencerbas i sextondelar: betoning på varje fjärdedel, oktavsprång på offbeat
+bass_a: "r! r r r r! r r+ r r! r r r r! r+ r r"
+bass_b: "r! r r+ r r! r r+ r r! r r+ r r! r+ r+ r"
+
+stabs_hit: "C . . . . . C . . . C . . . . ."

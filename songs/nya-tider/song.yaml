@@ -1,0 +1,154 @@
+# Nya tider – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml. Ingen röst: syntmelodin tar sångens plats.
+title: Nya tider
+bpm: 118
+key: A minor
+seed: 1981
+date: 2026-10-27
+genre: Synth-pop
+cover: {style: geometric, text: "#141414", footer: "#efe8d8"}
+tail_seconds: 3
+fade_out_bars: 6
+
+# Vers i moll, refrängen lyfter till relativ dur, sticket går uppåt mot G.
+progression: [Am, F, C, G]
+chords:
+  Am: {root: A1, notes: [A3, C4, E4]}
+  F:  {root: F1, notes: [A3, C4, F4]}
+  C:  {root: C2, notes: [G3, C4, E4]}
+  G:  {root: G1, notes: [G3, B3, D4]}
+  Dm: {root: D2, notes: [A3, D4, F4]}
+  Em: {root: E2, notes: [G3, B3, E4]}
+
+instruments:
+  kick:     {type: kick, pitch_hi: 150, pitch_lo: 55, decay: 0.12, drive: 0.8}
+  snare:    {type: snare, decay: 0.11, drive: 1.0}
+  hat:      {type: hat, decay: 0.018}
+  ohat:     {type: ohat, decay: 0.09}
+  metal_hi: {type: metal, pitch: 520, decay: 1.0}
+  metal_lo: {type: metal, pitch: 260, decay: 1.4}
+  bass:     {type: mono, osc: pulse, width: 0.5, cutoff: 900, env_amount: 3.0, env_decay: 0.05, resonance: 1.3, decay: 0.1, sustain: 0.4, legato: 0.7}
+  arp:      {type: mono, osc: pulse, width: 0.5, cutoff: 3200, env_amount: 1.5, env_decay: 0.03, resonance: 1.0, decay: 0.06, sustain: 0.0, legato: 0.5}
+  stabs:    {type: mono, osc: saw, cutoff: 2600, env_amount: 2.0, env_decay: 0.05, resonance: 1.2, decay: 0.15, sustain: 0.2, legato: 0.6}
+  strings:  {type: superpad, cutoff: 2400, voices: 3, spread: 6, attack: 0.3, release: 0.6, legato: 1.0}
+  lead:     {type: superlead, cutoff: 3600, voices: 3, spread: 5, drive: 0.4, release: 0.15, resonance: 1.1}
+  lead2:    {type: mono, osc: pulse, width: 0.3, cutoff: 2200, env_amount: 0.5, decay: 0.3, sustain: 0.8, release: 0.1, legato: 0.9}
+  phone:    {type: mono, osc: pulse, width: 0.5, cutoff: 4500, env_amount: 0.3, decay: 0.05, sustain: 0.6, release: 0.01, legato: 0.85}
+
+# Takter: intro 8 · vers 16 · refräng 8 · vers 16 · refräng 8 · stick 8 · dubbel refräng 16 · outro 8 = 88 (≈2:59)
+sections:
+  - name: intro_ring
+    bars: 4
+    tracks:
+      phone: phone_ring
+      hat: {pattern: hat_8, gain: -6}
+
+  - name: intro
+    bars: 4
+    tracks: &drums_basic
+      kick: kick_pop
+      snare: snare_pop
+      hat: hat_8
+      ohat: ohat_end
+      bass: bass_8
+      arp: {pattern: arp_bounce, gain: -3}
+      stabs: stabs_verse
+
+  - name: vers1
+    bars: 16
+    tracks:
+      <<: *drums_basic
+      lead: [verse_mel, verse_mel_b]
+
+  - name: refrang1
+    bars: 8
+    progression: [F, G, C, Am]
+    tracks: &chorus
+      kick: kick_pop
+      snare: snare_pop
+      hat: hat_8
+      ohat: ohat_end
+      metal_hi: metal_hi
+      metal_lo: metal_lo
+      bass: bass_chorus
+      arp: arp_bounce
+      stabs: stabs_chorus
+      strings: {pattern: strings_hold, gain: -2}
+      lead: [chorus_mel, chorus_mel_b]
+
+  - name: vers2
+    bars: 16
+    tracks:
+      <<: *drums_basic
+      metal_hi: metal_hi
+      metal_lo: metal_lo
+      lead: [verse_mel, verse_mel_b]
+
+  - name: refrang2
+    bars: 8
+    progression: [F, G, C, Am]
+    tracks: *chorus
+
+  - name: stick
+    bars: 8
+    progression: [Dm, Em, F, G]
+    tracks:
+      kick: kick_half
+      metal_hi: metal_hi
+      metal_lo: metal_lo
+      hat: hat_8
+      bass: bass_8
+      strings: strings_hold
+      phone: {pattern: phone_ring, gain: -4}
+      lead: bridge_mel
+    tail:
+      bars: 1
+      tracks:
+        snare: snare_fill
+
+  - name: refrang3
+    bars: 16
+    progression: [F, G, C, Am]
+    tracks:
+      <<: *chorus
+      lead2: {pattern: [chorus_mel, chorus_mel_b], transpose: -12}
+
+  - name: outro
+    bars: 8
+    tracks:
+      kick: kick_pop
+      snare: snare_pop
+      hat: hat_8
+      bass: bass_8
+      arp: arp_bounce
+    tail:
+      bars: 4
+      tracks:
+        phone: phone_ring
+        snare: null
+
+# Krispigt och torrt: kort rum, ingen sidechain.
+mix:
+  kick:     {gain: -3}
+  snare:    {gain: -6, reverb: 0.15}
+  hat:      {gain: -11, pan: 0.2}
+  ohat:     {gain: -17, pan: 0.2}
+  metal_hi: {gain: -9, pan: 0.4, reverb: 0.15}
+  metal_lo: {gain: -9, pan: -0.4, reverb: 0.15}
+  bass:     {gain: -1}
+  arp:      {gain: -9, pan: -0.3, delay: 0.15}
+  stabs:    {gain: -12, pan: 0.15, reverb: 0.1}
+  strings:  {gain: -18, reverb: 0.25, highpass: 200}
+  lead:     {gain: -9, delay: 0.2, reverb: 0.15, highpass: 150}
+  lead2:    {gain: -12, pan: -0.15}
+  phone:    {gain: -8, delay: 0.2, pan: 0.25}
+
+fx_buses:
+  delay: {steps: 2, feedback: 0.3, damp: 0.35, return: -6, reverb: 0.1}
+  reverb: {seconds: 1.1, damping: 7000, return: -8}
+
+master:
+  glue_threshold: -16
+  target_rms_db: -11.0
+  ceiling_db: -1.0
+  saturation: 0

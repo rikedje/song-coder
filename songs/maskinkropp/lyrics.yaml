@@ -1,0 +1,35 @@
+# Korta, hårda kommandon på tyska (egen text). Översättning i NOTES.md.
+voice: de_DE-thorsten-high
+style: shout
+length_scale: 0.9
+drive: 4.5
+slap: 0.09
+
+lines:
+  - {section: vers1, bar: 0, text: "Beweg dich!"}
+  - {section: vers1, bar: 4, text: "Arme hoch!"}
+  - {section: vers1, bar: 8, text: "Nach links!"}
+  - {section: vers1, bar: 12, text: "Nach rechts!"}
+
+  - {section: refrang1, bar: 0, text: "Maschinenkörper!"}
+  - {section: refrang1, bar: 4, text: "Schweiß und Stahl!"}
+
+  - {section: vers2, bar: 0, text: "Spür den Takt!"}
+  - {section: vers2, bar: 4, text: "Atme ein!"}
+  - {section: vers2, bar: 8, text: "Atme aus!"}
+  - {section: vers2, bar: 12, text: "Schneller! Schneller!"}
+
+  - {section: refrang2, bar: 0, text: "Maschinenkörper!"}
+  - {section: refrang2, bar: 4, text: "Schweiß und Stahl!"}
+
+  - {section: stick, bar: 0, text: "Halt!"}
+  - {section: stick, bar: 2, text: "Stillstand."}
+  - {section: stick, bar: 6, text: "Und los!"}
+
+  - {section: refrang3, bar: 0, text: "Maschinenkörper!"}
+  - {section: refrang3, bar: 4, text: "Schweiß und Stahl!"}
+  - {section: refrang3, bar: 8, text: "Maschinenkörper!"}
+  - {section: refrang3, bar: 12, text: "Schweiß und Stahl!"}
+
+  - {section: outro, bar: 0, text: "Beweg dich!"}
+  - {section: outro, bar: 6, text: "Halt."}

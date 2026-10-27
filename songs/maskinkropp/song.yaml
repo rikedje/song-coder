@@ -1,0 +1,115 @@
+# Maskinkropp – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, kommandona i lyrics.yaml.
+title: Maskinkropp
+bpm: 125
+key: E minor
+seed: 1982
+date: 2026-10-27
+genre: EBM
+cover: {style: gears}
+tail_seconds: 2
+fade_out_bars: 4
+
+# Basen står på E nästan hela tiden; refrängen kliver C – D – Em.
+progression: [Em]
+chords:
+  Em: {root: E2, notes: [E3, G3, B3]}
+  C:  {root: C2, notes: [E3, G3, C4]}
+  D:  {root: D2, notes: [F#3, A3, D4]}
+
+instruments:
+  kick:  {type: kick, pitch_hi: 160, pitch_lo: 48, decay: 0.2, drive: 2.0}
+  snare: {type: snare, decay: 0.1, drive: 2.0}
+  hat:   {type: hat, decay: 0.02}
+  ohat:  {type: ohat, decay: 0.08}
+  metal: {type: metal, pitch: 340, decay: 0.8}
+  bass:  {type: distbass, cutoff: 800, drive: 2.6, resonance: 1.8, env_amount: 3.5, decay: 0.09, sustain: 0.35, sub: 0.5, legato: 0.75}
+  stabs: {type: mono, osc: saw, cutoff: 2200, env_amount: 2.5, env_decay: 0.04, resonance: 1.5, decay: 0.12, sustain: 0.1, legato: 0.5}
+
+# Takter: intro 8 · vers 16 · refräng 8 · vers 16 · refräng 8 · stick 8 · refräng 16 · outro 8 = 88 (≈2:49)
+sections:
+  - name: intro
+    bars: 8
+    tracks:
+      kick: kick_four
+      bass: {pattern: bass_a, cutoff: [0.35, 0.9]}
+    tail:
+      bars: 4
+      tracks:
+        hat: hat_16
+
+  - name: vers1
+    bars: 16
+    tracks: &vers
+      kick: kick_four
+      snare: snare_back
+      hat: hat_16
+      ohat: ohat_off
+      bass: bass_a
+
+  - name: refrang1
+    bars: 8
+    progression: [C, D, Em, Em]
+    tracks: &chorus
+      kick: kick_four
+      snare: snare_back
+      hat: hat_16
+      ohat: ohat_off
+      metal: metal_a
+      bass: bass_b
+      stabs: stabs_hit
+
+  - name: vers2
+    bars: 16
+    tracks:
+      <<: *vers
+      metal: {pattern: metal_a, gain: -4}
+
+  - name: refrang2
+    bars: 8
+    progression: [C, D, Em, Em]
+    tracks: *chorus
+
+  - name: stick
+    bars: 8
+    tracks:
+      bass: {pattern: bass_a, cutoff: [0.4, 1.2]}
+      metal: metal_a
+    tail:
+      bars: 4
+      tracks:
+        kick: kick_four
+        snare: snare_roll4
+
+  - name: refrang3
+    bars: 16
+    progression: [C, D, Em, Em]
+    tracks: *chorus
+
+  - name: outro
+    bars: 8
+    tracks:
+      kick: kick_four
+      snare: snare_back
+      hat: hat_16
+      bass: {pattern: bass_a, cutoff: [1.0, 0.35]}
+
+# Torrt och nära: nästan inget rum, korta delays.
+mix:
+  kick:  {gain: -5}
+  snare: {gain: -4, reverb: 0.08}
+  hat:   {gain: -10, pan: 0.15}
+  ohat:  {gain: -16, pan: -0.15}
+  metal: {gain: -8, pan: 0.3}
+  bass:  {gain: -6, duck: 0.25}
+  stabs: {gain: -9, pan: -0.2}
+  voice: {gain: 0, highpass: 150, delay: 0.05}
+
+fx_buses:
+  delay: {steps: 2, feedback: 0.2, damp: 0.4, return: -10, reverb: 0.0}
+  reverb: {seconds: 0.8, damping: 6000, return: -10}
+
+master:
+  glue_threshold: -14
+  target_rms_db: -10.0
+  ceiling_db: -1.0
