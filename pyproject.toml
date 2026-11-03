@@ -12,6 +12,8 @@ dependencies = [
     "lameenc>=1.7",
     "mutagen>=1.47",
     "pillow>=10.1",
+    "pyworld>=0.3.5",
+    "setuptools<81",
 ]
 
 [tool.uv]

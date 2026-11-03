@@ -126,10 +126,11 @@ def piano(freq, n_gate, vel, p, cm, rng):
             break
         amp = k ** -1.1 * vel ** ((k - 1) / (6 * bright))
         dec = np.exp(-t * (0.6 + 0.35 * k / bright))
-        for c, det in enumerate((-1.5, 1.5)):
+        detune = p.get("detune", 1.5)
+        for c, det in enumerate((-detune, detune)):
             ph = rng.random() * 6.28
             out[c] += amp * dec * np.sin(2 * np.pi * fk * _cents(det) * t + ph)
-    hammer = lowpass_noise(n, rng) * np.exp(-t / 0.004) * 0.25
+    hammer = lowpass_noise(n, rng) * np.exp(-t / 0.004) * p.get("hammer", 0.25)
     out += hammer
     return out * env * vel * 0.5
 

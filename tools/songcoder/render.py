@@ -14,7 +14,7 @@ from .drums import DRUMS, FX, LONG_FX
 from .dsp import SR, db
 from .instruments import INSTRUMENTS
 from .tags import write_tags
-from .voice import chop_note, load_chops, plain, robotize, shout, tts, whisper
+from .voice import analyze_word, chop_note, load_chops, plain, robotize, sheen, shout, sing_word, tts, whisper
 
 VEL = {"x": 1.0, "o": 0.6, "g": 0.35}
 NOTE_RE = re.compile(r"^([A-G])(#|b)?(-?\d)$")
@@ -65,6 +65,21 @@ def resolve_token(tok, chord):
     else:
         f = note_freq(base)
     return [f * 2 ** octave], vel
+
+
+def shift_degrees(name, degrees, key):
+    """Move a note name by scale degrees in the song's key, to harmonize diatonically."""
+    m = NOTE_RE.match(name)
+    midi = 12 * (int(m[3]) + 1) + PC[m[1]] + {"#": 1, "b": -1, None: 0}[m[2]]
+    if not degrees:
+        return midi
+    root, mode = key.split()
+    tonic = PC[root[0]] + {"#": 1, "b": -1}.get(root[1:], 0)
+    scale = [0, 2, 3, 5, 7, 8, 10] if mode == "minor" else [0, 2, 4, 5, 7, 9, 11]
+    oct_, pc = divmod(midi - tonic, 12)
+    deg = min(range(7), key=lambda k: abs(scale[k] - pc))
+    o, d = divmod(deg + degrees, 7)
+    return tonic + 12 * (oct_ + o) + scale[d]
 
 
 def chord_freqs(chord, cfg):
@@ -226,9 +241,9 @@ class Song:
                 start = (sec_start + fx.get("at", 0)) * self.bar * SR
                 g = db(fx.get("gain", 0.0))
                 if fx["type"] in LONG_FX:
-                    x = FX[fx["type"]]({}, self.rng, fx.get("bars", 4) * self.bar)
+                    x = FX[fx["type"]](fx, self.rng, fx.get("bars", 4) * self.bar)
                 else:
-                    x = FX[fx["type"]]({}, self.rng)
+                    x = FX[fx["type"]](fx, self.rng)
                 self.place("fx", x * g, start)
         return kicks
 
@@ -244,6 +259,9 @@ class Song:
         carrier = [note_freq(n) for n in cfg.get("carrier", ["F2", "F3"])]
         sec_by_name = {s["name"]: b for b, s in self.sections}
         for line in cfg.get("lines") or []:
+            if "sing" in line:
+                self.render_sung(line, cfg, sec_by_name)
+                continue
             x = tts(line["text"], cfg["voice"], self.dir / "build" / "voice",
                     cfg.get("length_scale", 1.0))
             style = line.get("style", cfg.get("style", "robot"))
@@ -257,6 +275,46 @@ class Song:
                 y = robotize(x, carrier, self.rng, cfg.get("vocoder_mix", 0.7))
             bar = sec_by_name[line["section"]] + line.get("bar", 0)
             self.place("voice", y * db(line.get("gain", 0.0)), bar * self.bar * SR)
+
+    def word_analysis(self, word, cfg):
+        if not hasattr(self, "_words"):
+            self._words = {}
+        if word not in self._words:
+            x = tts(word, cfg["voice"], self.dir / "build" / "voice", cfg.get("length_scale", 1.0))
+            self._words[word] = analyze_word(x)
+        return self._words[word]
+
+    def render_sung(self, line, cfg, sec_by_name):
+        """A line sung word by word: `word/NOTE[,NOTE]/steps`, `_/steps` rests, a `*` throws the word."""
+        if not hasattr(self, "vrng"):
+            self.vrng = np.random.default_rng(self.song.get("seed", 1) + 11)
+        start_bar = sec_by_name[line["section"]] + line.get("bar", 0)
+        lead = {"track": line.get("track", "voice")}
+        for layer in [lead] + (line.get("layers") or []):
+            pos = line.get("step", 0)
+            for tok in line["sing"].split():
+                word, *notes, steps = tok.split("/")
+                if word != "_":
+                    self.place_word(word, notes[0].split(","), pos, int(steps), start_bar, line, layer, cfg)
+                pos += int(steps)
+
+    def place_word(self, word, notes, pos, steps, start_bar, line, layer, cfg):
+        throw = word.endswith("*")
+        word = word.rstrip("*")
+        key = self.song["key"]
+        shift = layer.get("shift", 0)
+        detune = 2 ** (self.vrng.normal(0, layer.get("detune", 0.0)) / 1200)
+        freqs = [440.0 * 2 ** ((shift_degrees(n, shift, key) + 12 * layer.get("octave", 0) - 69) / 12) * detune
+                 for n in notes]
+        y, onset = sing_word(self.word_analysis(word, cfg), freqs, steps * self.step * cfg.get("legato", 0.94),
+                             cfg, self.vrng, layer.get("formant", 1.0))
+        y = sheen(y, cfg.get("sheen", 0.0))
+        jitter = self.vrng.uniform(-1, 1) * layer.get("jitter", 0.0)
+        at = (start_bar * self.bar + pos * self.step + self.swing_offset(pos) + jitter) * SR - onset
+        st = dsp.pan(np.stack([y, y]), layer.get("pan", 0.0)) * db(line.get("gain", 0.0) + layer.get("gain", 0.0))
+        self.place(layer.get("track", "voice"), st, max(at, 0))
+        if throw and layer.get("track") == line.get("track", "voice") and "shift" not in layer:
+            self.place("throw", st, max(at, 0))
 
     def duck_env(self, kicks):
         L = int(self.step * 2.2 * SR)
@@ -289,9 +347,13 @@ class Song:
                 y = np.round(y * q) / q
             if m.get("duck"):
                 y = y * (1 - m["duck"] * duck)
+            if m.get("comp"):
+                y = dsp.compressor(y, m["comp"][0], m["comp"][1], 0.004, 0.08, m["comp"][2])
+            if m.get("air"):
+                y = y + (db(m["air"][1]) - 1) * dsp.sos_filter(y, "highpass", m["air"][0])
             y = dsp.pan(y, m.get("pan", 0.0))
             stats[name] = y
-            master += y
+            master += y * m.get("dry", 1.0)
             rev_in += y * m.get("reverb", 0.0)
             dly_in += y * m.get("delay", 0.0)
         fx = self.song.get("fx_buses", {})

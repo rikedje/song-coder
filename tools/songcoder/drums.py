@@ -1,11 +1,11 @@
 """Synthesized drum and FX one-shots. Each returns a stereo (2, n) sample."""
 import numpy as np
 
-from .dsp import SR, bandpass, decay, highpass, lowpass, osc_pulse, osc_sine, soft_clip, sos_filter, svf
+from .dsp import SR, bandpass, decay, highpass, lowpass, osc_pulse, osc_saw, osc_sine, soft_clip, sos_filter, svf
 
 
 def kick(p, rng):
-    n = int(0.45 * SR)
+    n = int(p.get("length", 0.45) * SR)
     t = np.arange(n) / SR
     f0, f1 = p.get("pitch_hi", 190.0), p.get("pitch_lo", 47.0)
     freq = f1 + (f0 - f1) * np.exp(-t / 0.032)
@@ -130,13 +130,13 @@ def rain(p, rng, seconds):
 def vinyl(p, rng, seconds):
     """Record surface: faint hiss, crackle and the odd pop."""
     n = int(seconds * SR)
-    hiss = sos_filter(rng.standard_normal((2, n)), "bandpass", [1500, 9000]) * 0.04
+    hiss = sos_filter(rng.standard_normal((2, n)), "bandpass", [1500, 9000]) * p.get("hiss", 0.04)
     imp = np.zeros(n)
-    count = int(seconds * 12)
+    count = int(seconds * p.get("crackle", 12))
     imp[rng.integers(0, n, count)] = rng.exponential(1.0, count) * rng.choice([-1, 1], count)
     crackle = sos_filter(imp, "highpass", 1800)
     pops = np.zeros(n)
-    big = int(seconds * 0.4)
+    big = int(seconds * p.get("pops", 0.4))
     pops[rng.integers(0, n, big)] = rng.uniform(1.5, 3.0, big)
     pops = sos_filter(pops, "lowpass", 900)
     x = hiss + (crackle + pops)[None, :] * 0.5
@@ -209,8 +209,66 @@ def chiphat(p, rng):
     return np.stack([x, x]) * 0.5
 
 
-DRUMS = {"kick": kick, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom, "metal": metal,
-         "timpani": timpani, "chipkick": chipkick, "chipsnare": chipsnare, "chiphat": chiphat}
+def kick606(p, rng):
+    """Drumatix-style kick: short dry thump with barely any sweep and a soft click."""
+    n = int(0.3 * SR)
+    t = np.arange(n) / SR
+    freq = p.get("pitch", 58.0) * (1 + 0.5 * np.exp(-t / 0.008))
+    body = osc_sine(freq, 0.0) * np.exp(-t / p.get("decay", 0.11))
+    click = bandpass(rng.standard_normal(n), 1200, 0.8) * np.exp(-t / 0.002) * 0.25
+    x = soft_clip(body + click, 1.2)
+    return np.stack([x, x])
+
+
+def snare606(p, rng):
+    """Drumatix-style snare: two damped tones plus a thin hiss of noise."""
+    n = int(0.3 * SR)
+    t = np.arange(n) / SR
+    tone = (0.6 * osc_sine(np.full(n, 220.0), 0.0) + 0.35 * osc_sine(np.full(n, 342.0), 0.0)) * np.exp(-t / 0.045)
+    noise = highpass(rng.standard_normal(n), 1800) * np.exp(-t / p.get("decay", 0.09))
+    x = soft_clip(0.8 * tone + p.get("snappy", 0.7) * noise, 1.2)
+    return np.stack([x, x])
+
+
+def hat606(p, rng):
+    """Drumatix-style hat: square-wave metal through a narrow band, closed or open by `decay`."""
+    n = int(max(0.1, p.get("decay", 0.025) * 6) * SR)
+    t = np.arange(n) / SR
+    x = bandpass(_metal(n, rng), p.get("tone", 8500), 1.2) * np.exp(-t / p.get("decay", 0.025))
+    return np.stack([x, x])
+
+
+def clap(p, rng):
+    """Synthetic handclap: a burst of quick noise hits into a short tail, wider per channel."""
+    n = int(0.4 * SR)
+    t = np.arange(n) / SR
+    env = np.exp(-t / p.get("decay", 0.11))
+    for off in (0.0, 0.009, 0.019, 0.031):
+        s = int(off * SR)
+        env[s:] += 1.4 * np.exp(-t[: n - s] / 0.0035)
+    out = [bandpass(rng.standard_normal(n), p.get("tone", 1500), 0.9) * env for _ in range(2)]
+    return np.stack([soft_clip(x, p.get("drive", 1.5)) for x in out]) * 0.6
+
+
+def reverse(p, rng, seconds):
+    """Reverse swell into a downbeat: a backwards open-fifth saw chord and noise, ending on the beat."""
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    out = []
+    for _ in range(2):
+        x = sum(osc_saw(np.full(n, p.get("pitch", 261.63) * r * (1 + 0.003 * rng.random())), rng.random())
+                for r in (1.0, 1.5, 2.25))
+        x = lowpass(x / 3, p.get("cutoff", 3500)) + 0.25 * highpass(rng.standard_normal(n), 4000)
+        out.append((x * np.exp(-t / (seconds / 3.5)))[::-1])
+    x = np.stack(out)
+    k = int(0.004 * SR)
+    x[:, -k:] *= np.linspace(1, 0, k)
+    return x * 0.7
+
+
+DRUMS = {"kick": kick, "clap": clap, "snare": snare, "hat": hat, "ohat": ohat, "etom": etom, "metal": metal,
+         "timpani": timpani, "chipkick": chipkick, "chipsnare": chipsnare, "chiphat": chiphat,
+         "kick606": kick606, "snare606": snare606, "hat606": hat606}
 FX = {"crash": crash, "impact": impact, "riser": riser, "downlifter": downlifter,
-      "rain": rain, "vinyl": vinyl, "zap": zap}
-LONG_FX = {"riser", "downlifter", "rain", "vinyl"}  # take a length in bars
+      "rain": rain, "vinyl": vinyl, "zap": zap, "reverse": reverse}
+LONG_FX = {"riser", "downlifter", "rain", "vinyl", "reverse"}  # take a length in bars

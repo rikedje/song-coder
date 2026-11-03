@@ -1,0 +1,40 @@
+# Mönster, 16 steg per takt (sextondelar vid 128 BPM, en takt = 1,875 s).
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus  (mellanslag grupperar bara)
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3/4 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. G#4) = absolut ton, ! = betoning
+
+# Subbig, synkoperad kick över två takter, halvtakt med klappen på trean
+kick_verse:  "x.........x..... x.....x.......g."
+kick_chorus: "x.....x...x..... x..x......x..o.."
+kick_four:   "x...x...x...x..."
+clap_half:   "........x......."
+clap_chorus: "........x......o ........x......."
+clap_fill:   "........x...o.xo"
+tick_verse:  "...g.......g...."
+hat_verse:   "x.oox.o.x.oox.og"
+hat_chorus:  "xgoxxgoxxgoxxgox"
+hat_roll:    "xgoxxgoxxoxoxxxx"
+ohat_chorus: "..............x. ................"
+
+# Bas
+bass_verse:  "r - - - - - . . . . r - - - . . r - - - - - - - . . . r - - . ."
+bass_chorus: "r - - - - . r - . . r - - - . . r - - . . r - - - . r - . r - ."
+bass_hold:   "r - - - - - - - - - - - - - - - r - - - - - - - - - - - - - . ."
+
+# Filtrerade plucks i versen, två takter
+pluck_verse: "1 . . 3 . . 2 . 4 . . 3 . . 2 . 1 . . 2 . 3 . . 4 . . 3 . 2 . ."
+
+# Stigande arpeggio i pre-chorus (två oktaver, sista halvan en oktav högre)
+arp_rise:    "1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 5 6 7 8 9 10 11 12 5 6 7 8 9 10 11 12"
+arp_chorus:  "5 . 7 8 . 6 . 7 . 9 . 8 . 7 . 6"
+
+# Blanka ackord
+pad_hold:    "C - - - - - - - - - - - - - - -"
+stab_chorus: "C . . C . . . C . . C . . . C ."
+
+# Små digitala klockspel
+chime_rest:  ". . . . . . . . . . . . . . . ."
+chime_up:    ". . . . . . . . . . . . C6 E6 G6 D7"
+chime_down:  ". . . . . . . . . . . . D7 G6 E6 C6"

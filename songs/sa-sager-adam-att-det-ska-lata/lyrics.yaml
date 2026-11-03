@@ -1,0 +1,111 @@
+# Sången. section + bar = var raden börjar. Varje ord är ord/ton/steg (16 steg = en takt):
+#   Adam/C5,A4/4  ordet delas på två toner under 4 steg
+#   _/2           paus
+#   sound*/A4/10  * = ordet kastas också in i delayen (spåret throw)
+# `text` är det som hamnar i ID3-taggen. `layers` är stämmor och dubblingar ovanpå leadet:
+#   shift = skalsteg i tonarten, octave, formant (annan "strupe"), jitter (s), detune (cent)
+voice: en_US-lessac-high
+style: sung
+length_scale: 1.0
+sheen: 0.08
+vibrato: 16
+scoop: 40
+
+x-stack: &stack
+  - {track: stack, shift: 2, pan: -0.55, gain: -2, formant: 1.04, jitter: 0.014, detune: 5}
+  - {track: stack, shift: -3, pan: 0.55, gain: -3, formant: 0.96, jitter: 0.014, detune: 5}
+
+x-hook: &hook
+  - {track: stack, shift: -2, pan: -0.7, gain: -2, formant: 1.03, jitter: 0.012, detune: 5}
+  - {track: stack, shift: -2, pan: 0.7, gain: -2, formant: 0.97, jitter: 0.012, detune: 5}
+  - {track: gang, pan: -0.85, formant: 1.08, jitter: 0.022, detune: 9}
+  - {track: gang, pan: 0.85, formant: 0.93, jitter: 0.022, detune: 9}
+  - {track: gang, octave: -1, pan: 0.3, gain: -3, formant: 1.1, jitter: 0.018, detune: 6}
+  - {track: gang, octave: -1, pan: -0.3, gain: -3, formant: 1.0, jitter: 0.018, detune: 6}
+
+x-lift: &lift
+  - {track: stack, shift: 2, pan: -0.6, gain: -3, formant: 1.04, jitter: 0.014, detune: 5}
+  - {track: stack, shift: -3, pan: 0.6, gain: -3, formant: 0.96, jitter: 0.014, detune: 5}
+
+x-c1: &c1 "That's/A4/2 how/A4/2 Adam/C5,A4/4 says/G4/2 it/A4/2 should/C5/2 sound/A4/10"
+x-c2: &c2 "Wide/B4/2 and/B4/1 glossy/D5,B4/3 when/A4/2 the/B4/2 hook/D5/2 comes/B4/2 round/G4/10"
+x-c3: &c3 "Bright/B4/2 and/G4/1 polished/B4,A4/3 not/G4/2 too/A4/2 loud/B4,G4/10"
+x-c4: &c4 "That's/A4/2 how/A4/2 Adam/C5,A4/4 says/G4/2 it/E4/2 should/G4/2 sound*/A4/12"
+x-c5: &c5 "That's/G4/2 how/G4/2 Adam/C5,G4/4 says/E4/2 it/D4/2 should/D4/2 sound*/C4/16"
+x-p1: &p1 "Stack/F4/2 it/F4/2 higher/A4,G4/4 let/F4/2 it/E4/2 climb/F4/10"
+x-p2: &p2 "Swell/G4/2 before/E4,G4/3 the/G4/1 beat/B4/2 right/A4/2 on/G4/2 time/E4/10"
+x-p3: &p3 "Throw/A4/2 the/A4/2 last/C5/4 word/A4/2 down/G4/2 the/A4/2 line*/C5/10"
+x-p4: &p4 "Who/B4/2 am/B4/2 I/D5/4 to/C5/2 ask/B4/2 him/A4/2 why*/B4/14"
+
+lines:
+  - {section: intro, bar: 6, track: voice_wide, text: "Adam says", sing: "Adam/C5,A4/4 says*/G4/10"}
+
+  - {section: verse1, bar: 0, text: "Late last night he sent the note", sing: "Late/E4/2 last/E4/2 night/G4/4 he/E4/2 sent/D4/2 the/C4/2 note/D4/10"}
+  - {section: verse1, bar: 2, text: "Keep it sparse, keep it dry", sing: "Keep/C4/2 it/C4/2 sparse/E4/4 _/2 keep/C4/2 it/D4/2 dry/E4,C4/10"}
+  - {section: verse1, bar: 4, text: "Close enough to hear me breathe", sing: "Close/C4/2 enough/C4,D4/3 to/E4/1 hear/F4/4 me/E4/2 breathe/C4/10"}
+  - {section: verse1, bar: 6, text: "Filtered plucks that barely try", sing: "Filtered/D4,B3/3 plucks/D4/3 that/E4/2 barely/F4,E4/4 try/D4/10"}
+  - {section: verse1, bar: 8, text: "No big room, no wall of sound", sing: "No/E4/2 big/E4/2 room/G4/4 no/E4/2 wall/D4/2 of/C4/2 sound/D4/10"}
+  - {section: verse1, bar: 10, text: "Just a voice beside your ear", sing: "Just/C4/2 a/C4/2 voice/E4/4 beside/D4,E4/4 your/G4/2 ear/E4,C4/10"}
+  - {section: verse1, bar: 12, text: "Save it all until the hook", sing: "Save/C4/2 it/C4/2 all/F4/4 until/E4,F4/4 the/E4/2 hook*/C4/8"}
+  - {section: verse1, bar: 14, text: "He said, you'll know it when you hear", sing: "He/B3/1 said/D4/1 you'll/D4/2 know/F4/2 it/E4/2 when/D4/2 you/E4/2 hear/G4/12"}
+
+  - {section: pre1, bar: 0, track: voice_wide, layers: *stack, text: "Stack it higher, let it climb", sing: *p1}
+  - {section: pre1, bar: 2, track: voice_wide, layers: *stack, text: "Swell before the beat, right on time", sing: *p2}
+  - {section: pre1, bar: 4, track: voice_wide, layers: *stack, text: "Throw the last word down the line", sing: *p3}
+  - {section: pre1, bar: 6, track: voice_wide, layers: *stack, text: "Who am I to ask him why", sing: *p4}
+
+  - {section: chorus1, bar: 0, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c1}
+  - {section: chorus1, bar: 2, track: voice_wide, layers: *hook, text: "Wide and glossy when the hook comes round", sing: *c2}
+  - {section: chorus1, bar: 4, track: voice_wide, layers: *hook, text: "Bright and polished, not too loud", sing: *c3}
+  - {section: chorus1, bar: 6, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c4}
+  - {section: chorus1, bar: 8, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c1}
+  - {section: chorus1, bar: 10, track: voice_wide, layers: *hook, text: "Wide and glossy when the hook comes round", sing: *c2}
+  - {section: chorus1, bar: 12, track: voice_wide, layers: *hook, text: "Bright and polished, not too loud", sing: *c3}
+  - {section: chorus1, bar: 14, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c5}
+
+  - {section: verse2, bar: 0, text: "Little chimes between the lines", sing: "Little/E4,D4/4 chimes/G4/4 between/E4,D4/4 the/C4/2 lines/D4/10"}
+  - {section: verse2, bar: 2, text: "Claps that never touched a hand", sing: "Claps/C4/2 that/C4/2 never/E4,D4/4 touched/C4/2 a/D4/2 hand/E4,C4/10"}
+  - {section: verse2, bar: 4, text: "Kick so low you feel it first", sing: "Kick/C4/2 so/C4/2 low/F4/4 you/E4/2 feel/F4/2 it/E4/2 first/C4/10"}
+  - {section: verse2, bar: 6, text: "Nothing here that needs a band", sing: "Nothing/D4,B3/3 here/D4/3 that/E4/2 needs/F4/2 a/E4/2 band/D4/10"}
+  - {section: verse2, bar: 8, text: "Every word I want to last", sing: "Every/E4,E4/4 word/G4/4 I/E4/2 want/D4/2 to/C4/2 last/D4/10"}
+  - {section: verse2, bar: 10, text: "Throw it out and let it fall", sing: "Throw/C4/2 it/C4/2 out/E4/4 and/D4/2 let/E4/2 it/G4/2 fall*/E4,C4/10"}
+  - {section: verse2, bar: 12, text: "Midnight gloss on everything", sing: "Midnight/C4,F4/4 gloss/F4/4 on/E4/2 everything/F4,E4,C4/10"}
+  - {section: verse2, bar: 14, text: "Adam says that that is all", sing: "Adam/B3,D4/2 says/D4/2 that/F4/2 that/E4/2 is/D4/2 all*/G4/14"}
+
+  - {section: pre2, bar: 0, track: voice_wide, layers: *stack, text: "Stack it higher, let it climb", sing: *p1}
+  - {section: pre2, bar: 2, track: voice_wide, layers: *stack, text: "Swell before the beat, right on time", sing: *p2}
+  - {section: pre2, bar: 4, track: voice_wide, layers: *stack, text: "Throw the last word down the line", sing: *p3}
+  - {section: pre2, bar: 6, track: voice_wide, layers: *stack, text: "Who am I to ask him why", sing: *p4}
+
+  - {section: chorus2, bar: 0, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c1}
+  - {section: chorus2, bar: 2, track: voice_wide, layers: *hook, text: "Wide and glossy when the hook comes round", sing: *c2}
+  - {section: chorus2, bar: 4, track: voice_wide, layers: *hook, text: "Bright and polished, not too loud", sing: *c3}
+  - {section: chorus2, bar: 6, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c4}
+  - {section: chorus2, bar: 8, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c1}
+  - {section: chorus2, bar: 10, track: voice_wide, layers: *hook, text: "Wide and glossy when the hook comes round", sing: *c2}
+  - {section: chorus2, bar: 12, track: voice_wide, layers: *hook, text: "Bright and polished, not too loud", sing: *c3}
+  - {section: chorus2, bar: 14, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c5}
+
+  - {section: bridge, bar: 0, text: "And if you ask me what I'd change", sing: "And/C4/2 if/C4/2 you/D4/2 ask/E4/4 me/D4/2 what/C4/2 I'd/D4/2 change/E4/14"}
+  - {section: bridge, bar: 2, text: "I would tell you not a thing", sing: "I/E4/2 would/G4/2 tell/B4/4 you/A4/2 not/G4/2 a/E4/2 thing/G4/14"}
+  - {section: bridge, bar: 4, text: "At this hour, with the lights down low", sing: "At/C4/2 this/C4/2 hour/F4,E4/4 with/C4/2 the/C4/2 lights/F4/2 down/G4/2 low/A4/12"}
+  - {section: bridge, bar: 6, text: "I just sing what he wants me to sing", sing: "I/G4/2 just/G4/2 sing/C5/4 what/G4/2 he/E4/2 wants/G4/2 me/E4/2 to/D4/2 sing*/C4/12"}
+
+  - {section: lift, bar: 0, track: voice_wide, layers: *lift, text: "Adam says, Adam says", sing: "Adam/D4,F4/4 says/A4/4 _/8 Adam/F4,A4/4 says/C5/4"}
+  - {section: lift, bar: 2, track: voice_wide, layers: *lift, text: "Adam says, Adam says", sing: "Adam/E4,G4/4 says/B4/4 _/8 Adam/G4,B4/4 says/D5/4"}
+  - {section: lift, bar: 4, track: voice_wide, layers: *lift, text: "Adam says, Adam says", sing: "Adam/F4,A4/4 says/C5/4 _/8 Adam/A4,C5/4 says/E5/4"}
+  - {section: lift, bar: 6, track: voice_wide, layers: *lift, text: "Adam says it should sound", sing: "Adam/G4,B4/4 says/D5/4 it/D5/2 should/E5/2 sound*/D5/12"}
+
+  - {section: chorus3, bar: 0, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c1}
+  - {section: chorus3, bar: 2, track: voice_wide, layers: *hook, text: "Wide and glossy when the hook comes round", sing: *c2}
+  - {section: chorus3, bar: 4, track: voice_wide, layers: *hook, text: "Bright and polished, not too loud", sing: *c3}
+  - {section: chorus3, bar: 5, step: 8, track: stack, gain: -2, text: "Ooh", sing: "ooh*/E5,D5/8"}
+  - {section: chorus3, bar: 6, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c4}
+  - {section: chorus3, bar: 8, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c1}
+  - {section: chorus3, bar: 10, track: voice_wide, layers: *hook, text: "Wide and glossy when the hook comes round", sing: *c2}
+  - {section: chorus3, bar: 11, step: 8, track: stack, gain: -2, text: "Ooh", sing: "ooh*/E5,D5/8"}
+  - {section: chorus3, bar: 12, track: voice_wide, layers: *hook, text: "Bright and polished, not too loud", sing: *c3}
+  - {section: chorus3, bar: 14, track: voice_wide, layers: *hook, text: "That's how Adam says it should sound", sing: *c5}
+
+  - {section: outro, bar: 0, track: voice_wide, text: "That's how Adam says", sing: "That's/A4/2 how/A4/2 Adam/C5,A4/4 says*/G4/12"}
+  - {section: outro, bar: 4, track: voice_wide, gain: -3, text: "It should sound", sing: "it/E4/2 should/D4/2 sound*/C4/20"}

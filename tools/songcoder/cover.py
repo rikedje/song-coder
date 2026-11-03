@@ -388,7 +388,65 @@ def pixelcity(cfg, rng):
     return img.resize((SIZE, SIZE), Image.NEAREST)
 
 
-STYLES = {"pixelcity": pixelcity, "orbit": orbit, "gears": gears, "geometric": geometric, "hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
+def record(cfg, rng):
+    """A worn record sleeve: cream card with ring wear, the black disc sliding out with an unmarked B label."""
+    p = {"paper": ["#e9dcc0", "#d6c29b"], "label": "#b5452f", "disc": "#121010", "steam": "#f6efe0",
+         **cfg.get("palette", {})}
+    a = _vgradient([(0, p["paper"][0]), (1, p["paper"][1])])
+    a += rng.normal(0, 7, (SIZE, SIZE))[..., None]  # paper grain
+    yy, xx = np.mgrid[0:SIZE, 0:SIZE]
+    # ring wear where the disc has rubbed through the sleeve
+    rr = np.hypot(xx - 610, yy - 960)
+    a -= (np.exp(-((rr - 520) / 14) ** 2) * 28 * (0.6 + 0.4 * np.sin(np.arctan2(yy - 960, xx - 610) * 3)))[..., None]
+    a -= (np.clip((np.hypot(xx - SIZE / 2, yy - SIZE / 2) - 600) / 500, 0, 1) * 40)[..., None]  # aged edges
+    img = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+    # the disc, half out of the sleeve to the right
+    cx, cy, r = 1080, 960, 560
+    d = ImageDraw.Draw(img)
+    d.ellipse([cx - r + 12, cy - r + 18, cx + r + 12, cy + r + 18], fill=(70, 55, 40))  # shadow
+    disc = np.asarray(img, dtype=float).copy()
+    dr = np.hypot(xx - cx, yy - cy)
+    on = dr < r
+    groove = 0.5 + 0.5 * np.sin(dr * 1.9 + rng.random() * 6)
+    ang = np.arctan2(yy - cy, xx - cx)
+    sheen = np.clip(np.cos(2 * (ang + 0.7)), 0, 1) ** 6 * 70  # light catching the grooves
+    col = _hex(p["disc"]) + groove[..., None] * 10 + sheen[..., None] * (0.7 + 0.3 * groove[..., None])
+    disc[on] = col[on]
+    # label: plain colour, no text, just a big B and the spindle hole
+    lab = dr < 175
+    disc[lab] = (_hex(p["label"]) + rng.normal(0, 5, (SIZE, SIZE))[..., None])[lab]
+    disc[dr < 12] = _hex(p["paper"][1]) * 0.6
+    img = Image.fromarray(np.clip(disc, 0, 255).astype(np.uint8))
+    # sleeve edge over the disc (the left part of the disc stays inside)
+    sleeve = np.asarray(img, dtype=float).copy()
+    edge = 760
+    base = np.asarray(Image.fromarray(np.clip(a, 0, 255).astype(np.uint8)), dtype=float)
+    sleeve[:, :edge] = base[:, :edge]
+    sleeve[cy - r:cy + r, edge - 6:edge] *= 0.75
+    img = Image.fromarray(np.clip(sleeve, 0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(img)
+    f = ImageFont.truetype(str(FONT), 150)
+    f.set_variation_by_name("Bold")
+    d.text((cx, cy), "B", font=f, fill=tuple(int(v) for v in _hex(p["paper"][0])), anchor="mm")
+    # a tea cup seen from above in the lower-left corner, with rain-blurred steam
+    tx, ty = 330, 1180
+    d.ellipse([tx - 190, ty - 190, tx + 190, ty + 190], fill=(236, 230, 218))
+    d.ellipse([tx - 150, ty - 150, tx + 150, ty + 150], fill=(120, 72, 38))
+    d.ellipse([tx - 120, ty - 125, tx + 135, ty + 140], fill=(140, 86, 45))
+    d.rounded_rectangle([tx + 180, ty - 35, tx + 270, ty + 35], radius=35, outline=(236, 230, 218), width=22)
+    steam = Image.new("RGB", (SIZE, SIZE))
+    ds = ImageDraw.Draw(steam)
+    sc = tuple(int(v * 0.35) for v in _hex(p["steam"]))
+    for k in range(3):
+        x0 = tx - 60 + 60 * k
+        pts = [(x0 + 30 * np.sin(j / 4 + k), ty - 40 - j * 14) for j in range(26)]
+        ds.line(pts, fill=sc, width=18)
+    steam = steam.filter(ImageFilter.GaussianBlur(14))
+    a = np.asarray(img, dtype=float) + np.asarray(steam, dtype=float)
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+
+
+STYLES = {"record": record, "pixelcity": pixelcity, "orbit": orbit, "gears": gears, "geometric": geometric, "hyperspace": hyperspace, "rainwindow": rainwindow, "sunset": sunset, "nightcity": nightcity, "dawnclock": dawnclock, "nocturne": nocturne,
           "circuit": circuit}
 
 

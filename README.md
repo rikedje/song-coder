@@ -67,6 +67,7 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 | [Maskinkropp](songs/maskinkropp/) | EBM med tunga sequencerbasar och hårda tyska kommandon | 125 BPM, E-moll |
 | [Ingen syrebrist](songs/ingen-syrebrist/) | instrumental rymdelektronika med stråkmaskin och pukor à la Jarre/Schulze | 118 BPM, A-moll |
 | [Pixelstad](songs/pixelstad/) | glad 8-bit-chiptune med arkadutrop och tonartsbyte | 125 BPM, C-dur → D-dur |
+| [Så säger Adam att det ska låta](songs/sa-sager-adam-att-det-ska-lata/) | elektronisk R&B i halvtakt med sjungen engelsk text, stämmor och blanka syntar | 128 BPM, C-dur |
 
 ## Ansvarsfriskrivning (läs det här)
 
