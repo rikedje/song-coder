@@ -41,7 +41,7 @@ Det här behövs: macOS eller Linux, [uv](https://docs.astral.sh/uv/) och nätve
 
 ```sh
 ./render.sh songs/midnattsmotor     # renderar om en befintlig låt
-./tag.sh                            # gör bara om omslag och ID3-taggar för alla låtar, ljudet lämnas orört
+./tag.sh                            # gör bara om omslag, ID3-taggar och lyrics.md för alla låtar, ljudet lämnas orört
 ```
 
 Vill du göra en ny låt öppnar du repot i Claude Code och skriver `/ny-lat`.
@@ -51,6 +51,7 @@ Allt som skapas hamnar i `songs/<låt>/out/`:
 - `song.mp3` med taggar och inbäddat omslag
 - `song.wav` i 24 bit
 - `cover.jpg`
+- `lyrics.md` med bara texten, om låten har text
 
 ### Låtar hittills
 

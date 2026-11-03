@@ -12,7 +12,7 @@ New songs are made with the project skill `/ny-lat` (`.claude/skills/ny-lat/SKIL
 
 ```sh
 ./render.sh songs/<slug>        # setup if needed, then render out/song.wav + out/song.mp3
-./tag.sh [songs/<slug> ...]     # only regenerate cover.jpg + ID3 tags, audio untouched (no args = all songs)
+./tag.sh [songs/<slug> ...]     # only regenerate cover.jpg + ID3 tags + lyrics.md, audio untouched (no args = all songs)
 tools/setup.sh [voice ...]      # uv sync + download Piper voice models into voices/
 ffprobe -v error -show_entries format=duration -of default=nw=1 songs/<slug>/out/song.mp3
 ```
@@ -33,7 +33,7 @@ Engine modules:
 - `drums.py`: the `DRUMS` (`kick` (`length` s), `clap`, `snare`, `hat`, `ohat`, `etom`, `metal`, `timpani`, `chipkick`, `chipsnare`, `chiphat`, and the Drumatix-style `kick606`, `snare606`, `hat606`) and `FX` one-shots. Each `fx` entry in a section is passed to its FX function as params (e.g. `vinyl` takes `crackle`, `pops`, `hiss`). `FX` also has `crash`, `impact`, `zap`. FX in `LONG_FX` (`riser`, `downlifter`, `rain`, `vinyl`, `reverse`) take `bars` as their length; `reverse` ends on the next downbeat. Drum samples are cached per track, so two tracks of the same kind can have different params.
 - `voice.py`: Piper via subprocess, cached in `songs/<slug>/build/voice/`, plus the robot, whisper, plain and shout processors, vocal chops, and sung words (WORLD resynthesis via `pyworld`: stretch to the note, replace pitch, move formants).
 - `cover.py`: procedural 1500×1500 cover art using the committed font `fonts/SpaceGrotesk.ttf` (OFL). Pillow's default font lacks å/ä/ö.
-- `tags.py`: ID3v2.3 tags via mutagen (title, artist `song-coder`, date, genre, BPM, key, lyrics, embedded APIC cover).
+- `tags.py`: ID3v2.3 tags via mutagen (title, artist `song-coder`, date, genre, BPM, key, lyrics, embedded APIC cover). Also writes `out/lyrics.md`: the text of `lines` alone, with a blank line between sections (no file without lines; chops are left out).
 - `render.py`: sequencer → per-track buffers → kick sidechain → buses → master (optional `lofi` tape stage: wow/flutter, lowpass, drive; `saturation: 0` disables soft clipping) → 24-bit WAV, lameenc MP3, `out/cover.jpg`, tags.
 
 Rendering prints per-track RMS/peak, which is used to balance `mix`. Chord-tone indices past the chord size wrap an octave up.

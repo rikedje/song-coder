@@ -15,6 +15,22 @@ def _id3_key(key):
     return parts[0] + KEY_SUFFIX.get(parts[1].lower(), "")
 
 
+def write_lyrics(path, lyrics):
+    """Write the sung or spoken text alone to a Markdown file, or remove a stale one."""
+    lines = (lyrics or {}).get("lines") or []
+    if not lines:
+        path.unlink(missing_ok=True)
+        return
+    out, section = [], lines[0]["section"]
+    for line in lines:
+        if line["section"] != section:
+            out.append("")
+            section = line["section"]
+        # two trailing spaces: a hard line break, Markdown would otherwise join the lines
+        out.append(line["text"] + "  ")
+    path.write_text("\n".join(out) + "\n")
+
+
 def write_tags(mp3_path, song, lyrics, cover_path, seconds):
     date = str(song.get("date") or datetime.date.today().isoformat())
     tags = ID3()

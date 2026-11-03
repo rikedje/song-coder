@@ -13,7 +13,7 @@ from .cover import make_cover
 from .drums import DRUMS, FX, LONG_FX
 from .dsp import SR, db
 from .instruments import INSTRUMENTS
-from .tags import write_tags
+from .tags import write_lyrics, write_tags
 from .voice import analyze_word, chop_note, load_chops, plain, robotize, sheen, shout, sing_word, tts, whisper
 
 VEL = {"x": 1.0, "o": 0.6, "g": 0.35}
@@ -426,6 +426,7 @@ def retag(song_dir):
     cover = make_cover(song, np.random.default_rng(song.get("seed", 1)), od / "cover.jpg")
     seconds = mutagen.mp3.MP3(mp3).info.length
     write_tags(mp3, song, lyrics, cover, seconds)
+    write_lyrics(od / "lyrics.md", lyrics)
     print(f"Taggat: {mp3}, {cover}")
 
 
@@ -447,4 +448,5 @@ def render(song_dir):
     # cover.jpg next to the mp3 is picked up by players that read folder art
     cover = make_cover(s.song, np.random.default_rng(s.song.get("seed", 1)), od / "cover.jpg")
     write_tags(od / "song.mp3", s.song, s.lyrics, cover, out.shape[1] / SR)
+    write_lyrics(od / "lyrics.md", s.lyrics)
     print(f"Klart: {od / 'song.wav'}, {od / 'song.mp3'}, {cover}")
