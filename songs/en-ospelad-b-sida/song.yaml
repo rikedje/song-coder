@@ -1,0 +1,167 @@
+# En ospelad B-sida – arrangement, instruments and mix.
+# Mönster (patterns) finns i patterns.yaml, den viskade radiorösten i lyrics.yaml.
+title: En ospelad B-sida
+bpm: 66
+key: A minor
+seed: 1979
+date: 2026-10-28
+genre: Lo-fi jazz
+cover: {style: record, text: "#2a1d14", footer: "#2a1d14"}
+tail_seconds: 4
+fade_out_bars: 3
+
+# Trummaskinen går rakt men lite slarvigt, pianot spelas för hand
+swing: 0.12
+swing_unit: 16
+humanize: {time: 0.008, vel: 0.14}
+
+# A: Am9 – Dm9 – G13 – Cmaj9 – Fmaj9 – Bm7b5 – E7b9 – Am9 (ett ackord per takt)
+# B (bryggan): Fmaj9 – Em9 – Dm9 – Cmaj9 – Fmaj9 – Em9 – Bm7b5 – E7
+progression: [Am9, Dm9, G13, Cmaj9, Fmaj9, Bm7b5, E7b9, Am9]
+chords:
+  Am9:   {root: A1, notes: [G3, B3, C4, E4]}
+  Dm9:   {root: D2, notes: [F3, A3, C4, E4]}
+  G13:   {root: G1, notes: [F3, B3, E4]}
+  Cmaj9: {root: C2, notes: [E3, G3, B3, D4]}
+  Fmaj9: {root: F1, notes: [E3, A3, C4, G4]}
+  Bm7b5: {root: B1, notes: [A3, D4, F4]}
+  E7b9:  {root: E2, notes: [G#3, D4, F4]}
+  Em9:   {root: E2, notes: [G3, B3, D4, F#4]}
+  E7:    {root: E2, notes: [G#3, B3, D4]}
+
+# Ett gammalt, lite ostämt piano och en Drumatix-liknande trummaskin. Inget modernt.
+instruments:
+  keys:   {type: piano, decay: 2.6, release: 0.5, brightness: 0.55, partials: 10, detune: 4.0, hammer: 0.12}
+  lead:   {type: piano, decay: 3.2, release: 0.6, brightness: 0.7, partials: 12, detune: 3.5, hammer: 0.18}
+  bass:   {type: softbass, cutoff: 260, env_amount: 0.5, decay: 0.8, sustain: 0.5, sub: 1.0, legato: 0.85}
+  strings: {type: strings, attack: 0.9, release: 1.6, cutoff: 1800, octave: 0.3}
+  kick:   {type: kick606, pitch: 56, decay: 0.12}
+  snare:  {type: snare606, decay: 0.08, snappy: 0.5}
+  hat:    {type: hat606, decay: 0.02, tone: 8000}
+  ohat:   {type: hat606, decay: 0.16, tone: 7500}
+
+# Takter: intro 4 · A 8 · A 8 · B 8 · A 8 · B 8 · A 8 · outro 4 = 56 (≈3:24 + efterklang)
+sections:
+  - name: intro
+    bars: 4
+    progression: [Am9, Dm9, Fmaj9, E7]
+    tracks:
+      keys: {pattern: keys_broken, cutoff: [0.5, 1.0]}
+    tail:
+      bars: 1
+      tracks:
+        hat: {pattern: hat_soft, gain: -6}
+    fx:
+      - {type: vinyl, at: 0, bars: 58, gain: 0, crackle: 34, pops: 0.5, hiss: 0.06}
+      - {type: rain, at: 0, bars: 6, gain: -8}
+
+  - name: A1
+    bars: 8
+    tracks:
+      keys: keys_comp
+      bass: bass_slow
+      kick: kick_lazy
+      hat: hat_soft
+      lead: lead_a
+
+  - name: A2
+    bars: 8
+    tracks:
+      keys: keys_comp
+      bass: bass_slow
+      kick: kick_lazy
+      snare: snare_back
+      hat: hat_soft
+      ohat: ohat_end
+      lead: lead_a_end
+
+  - name: B1
+    bars: 8
+    progression: [Fmaj9, Em9, Dm9, Cmaj9, Fmaj9, Em9, Bm7b5, E7]
+    tracks:
+      keys: keys_hold
+      bass: {pattern: bass_hold, gain: -2}
+      strings: {pattern: strings_hold, gain: 0}
+      kick: {pattern: kick_lazy, gain: -3}
+      hat: {pattern: hat_soft, gain: -4}
+      lead: {pattern: lead_b, gain: -4}
+    tail:
+      bars: 1
+      tracks:
+        snare: snare_pickup
+
+  - name: A3
+    bars: 8
+    tracks:
+      keys: keys_broken
+      bass: bass_slow
+      kick: kick_lazy
+      snare: snare_back
+      hat: hat_soft
+      ohat: ohat_end
+      lead: {pattern: lead_a, transpose: 12, gain: -5}
+
+  - name: B2
+    bars: 8
+    progression: [Fmaj9, Em9, Dm9, Cmaj9, Fmaj9, Em9, Bm7b5, E7]
+    tracks:
+      keys: keys_hold
+      bass: {pattern: bass_hold, gain: -2}
+      strings: strings_hold
+      hat: {pattern: hat_soft, gain: -6}
+    tail:
+      bars: 2
+      tracks:
+        lead: {pattern: lead_b_turn, gain: -3}
+        kick: {pattern: kick_lazy, gain: -3}
+        snare: [snare_rest, snare_pickup]
+
+  - name: A4
+    bars: 8
+    tracks:
+      keys: keys_comp
+      bass: bass_slow
+      kick: kick_lazy
+      snare: snare_back
+      hat: hat_soft
+      ohat: ohat_end
+      strings: {pattern: strings_hold, gain: -6}
+      lead: lead_a_end
+
+  - name: outro
+    bars: 4
+    progression: [Fmaj9, E7, Am9, Am9]
+    tracks:
+      keys: {pattern: keys_broken, cutoff: [1.0, 0.4]}
+      bass: {pattern: bass_hold, gain: -4}
+    tail:
+      bars: 2
+      tracks:
+        keys: keys_hold
+    fx:
+      - {type: rain, at: 0, bars: 6, gain: -8}
+
+# Trummaskinen lite krossad som om den samplats från skiva, radiofilter på rösten
+mix:
+  keys:    {gain: -12, reverb: 0.25, lowpass: 5500, pan: -0.15}
+  lead:    {gain: -6, reverb: 0.3, delay: 0.12, lowpass: 6000, pan: 0.12}
+  bass:    {gain: -14, duck: 0.1}
+  strings: {gain: -18, reverb: 0.35, pan: 0.0, lowpass: 3500}
+  kick:    {gain: -5, lowpass: 4000, downsample: 2, crush: 12}
+  snare:   {gain: -6, reverb: 0.2, lowpass: 7000, downsample: 2, crush: 11}
+  hat:     {gain: -10, pan: 0.25, downsample: 2, crush: 11}
+  ohat:    {gain: -13, pan: 0.3, downsample: 2, crush: 11}
+  voice:   {gain: -2, reverb: 0.15, delay: 0.1, highpass: 380, lowpass: 3000, downsample: 3, crush: 9}
+  fx:      {gain: -15}
+
+fx_buses:
+  delay: {steps: 6, feedback: 0.3, damp: 0.3, return: -8, reverb: 0.3}
+  reverb: {seconds: 2.2, damping: 3200, return: -6}
+
+master:
+  glue_threshold: -18
+  target_rms_db: -13.0
+  ceiling_db: -1.0
+  saturation: 0
+  # 33 varv/minut ≈ 0,55 Hz: skivans svaj när den inte ligger helt plant
+  lofi: {wow: 0.0026, wow_hz: 0.55, flutter: 0.0002, flutter_hz: 6.0, lowpass: 8000, drive: 1.8}

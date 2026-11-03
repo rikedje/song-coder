@@ -1,0 +1,15 @@
+# Viskad svensk text, som en gammal radiosändning. section + bar = var repliken börjar
+# (takt räknad från sektionens start, 0 = första takten).
+voice: sv_SE-nst-medium
+style: whisper
+length_scale: 1.3
+air: 0.1
+
+lines:
+  - {section: intro, bar: 1, text: "Det regnar igen."}
+  - {section: A2, bar: 4, text: "Vattnet kokar. Jag tar fram två koppar."}
+  - {section: B1, bar: 0, text: "Regnet trummar sakta mot rutan."}
+  - {section: B1, bar: 4, text: "Teet får dra en stund till."}
+  - {section: B2, bar: 0, text: "Ingen ringer. Ingen väntar."}
+  - {section: B2, bar: 4, text: "Bara regnet, teet och den här skivan."}
+  - {section: outro, bar: 1, text: "Vänd inte på den än."}

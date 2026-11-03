@@ -1,0 +1,62 @@
+# Mönster, 16 steg per takt (sextondelar vid 66 BPM, en takt ≈ 3,6 s).
+#
+# Trummor:  x = full, o = medel, g = svag (ghost), . = paus  (mellanslag grupperar bara)
+# Melodi:   . = paus, - = håll föregående ton
+#           r = ackordets grundton, 1/2/3/4 = ackordtoner, + / - = oktav upp/ned
+#           C = hela ackordet, notnamn (t.ex. G#4) = absolut ton, ! = betoning
+
+# Drumatix, lugnt och glest
+kick_lazy:    "x.........x..... x.....o...x....."
+snare_back:   "....x.......x..."
+snare_pickup: "....x.......x.go"
+snare_rest:   "................"
+hat_soft:     "x.g.o.g.x.g.o.g."
+ohat_end:     "................ ................ ................ ..............x."
+
+# Bas: grundton som får klinga
+bass_slow: "r - - - - - - - . . r - - - - ."
+bass_hold: "r - - - - - - - - - - - - - - -"
+
+# Vänster hand
+keys_broken: "1 - - 2 - - 3 - - 4 - - 3 - 2 -"
+keys_comp:   "C - - - - - - - - - C - - - - -"
+keys_hold:   "C - - - - - - - - - - - - - - -"
+strings_hold: "C - - - - - - - - - - - - - - -"
+
+# Höger hand, A-delen över Am9 – Dm9 – G13 – Cmaj9 – Fmaj9 – Bm7b5 – E7b9 – Am9
+lead_a: >-
+  E5 - - - - - - - D5 - C5 - B4 - - -
+  A4 - - - - - - - - - - - C5 - D5 -
+  E5 - - - - - D5 - - - B4 - - - - -
+  C5 - - - - - - - - - - - . . G4 -
+  A4 - - - - - C5 - E5 - - - - - - -
+  D5 - - - - - - - C5 - B4 - A4 - - -
+  G#4 - - - - - - - B4 - - - D5 - F5 -
+  E5 - - - - - - - - - - - . . . .
+
+# Samma A, men slutet går ned och landar på grundtonen
+lead_a_end: >-
+  E5 - - - - - - - D5 - C5 - B4 - - -
+  A4 - - - - - - - - - - - C5 - D5 -
+  E5 - - - - - D5 - - - B4 - - - - -
+  C5 - - - - - - - - - - - . . G4 -
+  A4 - - - - - C5 - E5 - - - - - - -
+  D5 - - - - - - - C5 - B4 - A4 - - -
+  B4 - - - - - - - G#4 - - - F4 - - -
+  A4 - - - - - - - - - - - . . . .
+
+# Bryggan över Fmaj9 – Em9 – Dm9 – Cmaj9 – Fmaj9 – Em9 – Bm7b5 – E7
+lead_b: >-
+  C5 - - - - - - - A4 - - - G4 - - -
+  B4 - - - - - - - - - - - . . G4 -
+  A4 - - - - - F4 - - - E4 - - - - -
+  G4 - - - - - - - - - - - . . . .
+  C5 - - - - - - - E5 - - - F5 - - -
+  G5 - - - - - F#5 - - - E5 - - - - -
+  D5 - - - - - - - F5 - - - - - - -
+  E5 - - - - - D5 - - - B4 - G#4 - - -
+
+# De två sista takterna i andra bryggan (Bm7b5 – E7), en upptakt till sista A
+lead_b_turn: >-
+  D5 - - - - - - - F5 - - - - - - -
+  E5 - - - - - D5 - - - B4 - G#4 - - -
